@@ -1,9 +1,9 @@
-import { AddHrContactCompact } from "@/components/add-hr-contact-compact"
+import AddHrContact from "@/components/add-hr-contact"
 
 function Addhr() {
   return (
     <>
-      <AddHrContactCompact />
+      <AddHrContact />
     </>
   )
 }

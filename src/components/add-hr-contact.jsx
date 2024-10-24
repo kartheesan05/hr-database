@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
-export function AddHrContactCompact() {
+export default function AddHrContact() {
   const [formData, setFormData] = useState({
     fullName: "",
     companyName: "",

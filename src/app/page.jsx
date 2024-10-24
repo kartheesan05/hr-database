@@ -1,8 +1,8 @@
-import HrDetailsPurple from "@/components/hr-details-purple-paginated-with-modal";
+import HrDetails from "@/components/hr-details";
 function Page() {
   return (
     <>
-      <HrDetailsPurple />
+      <HrDetails />
     </>
   );
 }

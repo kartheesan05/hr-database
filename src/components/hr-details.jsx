@@ -35,7 +35,7 @@ import { Label } from "@/components/ui/label";
 
 import { getHrData } from "@/lib/actions";
 
-export default function HrDetailsPurple() {
+export default function HrDetails() {
   const [searchParams, setSearchParams] = useState({
     name: "",
     phoneNumber: "",
