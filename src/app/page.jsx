@@ -1,7 +1,10 @@
-export default function Home() {
+import HrDetailsPurple from "@/components/hr-details-purple-paginated-with-modal";
+function Page() {
   return (
     <>
-      <h1>Hello World</h1>
+      <HrDetailsPurple />
     </>
   );
 }
+
+export default Page;
