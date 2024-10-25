@@ -110,7 +110,7 @@ export default function HrDetails() {
         <Button
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-violet-600 hover:bg-violet-700"
         >
           <ChevronLeft className="h-4 w-4" />
           Previous
@@ -121,7 +121,7 @@ export default function HrDetails() {
         <Button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages || totalCount === 0}
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-violet-600 hover:bg-violet-700"
         >
           Next
           <ChevronRight className="h-4 w-4" />
@@ -131,10 +131,10 @@ export default function HrDetails() {
   );
 
   return (
-    <div className="min-h-screen w-screen p-[75px] bg-purple-50">
-      <Card className="mb-6 border-purple-200 shadow-purple-100 rounded-lg">
-        <CardHeader className="bg-purple-100 rounded-t-lg mb-4">
-          <CardTitle className="text-purple-800 text-center text-3xl font-bold">
+    <div className="min-h-screen w-screen p-[75px] bg-violet-50">
+      <Card className="mb-6 border-violet-200 shadow-violet-100 rounded-lg">
+        <CardHeader className="bg-violet-100 rounded-t-lg mb-4">
+          <CardTitle className="text-violet-800 text-center text-3xl font-bold">
             HR Database
           </CardTitle>
         </CardHeader>
@@ -151,7 +151,7 @@ export default function HrDetails() {
                     name: e.target.value.trim(),
                   })
                 }
-                className="border-purple-200 focus:ring-purple-500"
+                className="border-violet-200 focus:ring-violet-500"
               />
             </div>
             <div>
@@ -165,7 +165,7 @@ export default function HrDetails() {
                     phoneNumber: e.target.value.trim(),
                   })
                 }
-                className="border-purple-200 focus:ring-purple-500"
+                className="border-violet-200 focus:ring-violet-500"
               />
             </div>
             <div>
@@ -179,7 +179,7 @@ export default function HrDetails() {
                     email: e.target.value.trim(),
                   })
                 }
-                className="border-purple-200 focus:ring-purple-500"
+                className="border-violet-200 focus:ring-violet-500"
               />
             </div>
             <div>
@@ -193,7 +193,7 @@ export default function HrDetails() {
                   })
                 }
               >
-                <SelectTrigger className="border-purple-200 focus:ring-purple-500">
+                <SelectTrigger className="border-violet-200 focus:ring-violet-500">
                   <SelectValue placeholder="Interview Mode" />
                 </SelectTrigger>
                 <SelectContent>
@@ -211,13 +211,13 @@ export default function HrDetails() {
                 onChange={(e) =>
                   setSearchParams({ ...searchParams, company: e.target.value })
                 }
-                className="border-purple-200 focus:ring-purple-500"
+                className="border-violet-200 focus:ring-violet-500"
               />
             </div>
             <div className="flex items-end">
               <Button
                 onClick={handleSearch}
-                className="bg-purple-600 hover:bg-purple-700 w-full"
+                className="bg-violet-600 hover:bg-violet-700 w-full"
               >
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
@@ -235,26 +235,26 @@ export default function HrDetails() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
           </div>
         ) : hrData.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow className={cn("bg-purple-100 hover:bg-purple-200")}>
-                <TableHead className="text-purple-800">S.No</TableHead>
-                <TableHead className="text-purple-800">HR Name</TableHead>
-                <TableHead className="text-purple-800">Volunteer</TableHead>
-                <TableHead className="text-purple-800">Incharge</TableHead>
-                <TableHead className="text-purple-800">Company</TableHead>
-                <TableHead className="text-purple-800">Email</TableHead>
-                <TableHead className="text-purple-800">Number</TableHead>
-                <TableHead className="text-purple-800">Status</TableHead>
-                <TableHead className="text-purple-800">
+              <TableRow className={cn("bg-violet-100 hover:bg-violet-200")}>
+                <TableHead className="text-violet-800">S.No</TableHead>
+                <TableHead className="text-violet-800">HR Name</TableHead>
+                <TableHead className="text-violet-800">Volunteer</TableHead>
+                <TableHead className="text-violet-800">Incharge</TableHead>
+                <TableHead className="text-violet-800">Company</TableHead>
+                <TableHead className="text-violet-800">Email</TableHead>
+                <TableHead className="text-violet-800">Number</TableHead>
+                <TableHead className="text-violet-800">Status</TableHead>
+                <TableHead className="text-violet-800">
                   Interview Mode
                 </TableHead>
-                <TableHead className="text-purple-800">HR Count</TableHead>
-                <TableHead className="text-purple-800">Transport</TableHead>
-                <TableHead className="text-purple-800">Show Details</TableHead>
+                <TableHead className="text-violet-800">HR Count</TableHead>
+                <TableHead className="text-violet-800">Transport</TableHead>
+                <TableHead className="text-violet-800">Show Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -262,8 +262,8 @@ export default function HrDetails() {
                 <TableRow
                   key={hr.id}
                   className={cn(
-                    index % 2 === 0 ? "bg-purple-50" : "bg-white",
-                    "hover:bg-purple-100"
+                    index % 2 === 0 ? "bg-violet-50" : "bg-white",
+                    "hover:bg-violet-100"
                   )}
                 >
                   <TableCell>
@@ -294,7 +294,7 @@ export default function HrDetails() {
                   <TableCell>
                     <Button
                       onClick={() => showDetails(hr)}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-violet-600 hover:bg-violet-700"
                     >
                       <Info className="h-4 w-4 mr-2" />
                       Details
@@ -319,25 +319,25 @@ export default function HrDetails() {
               {selectedHr && (
                 <span className="space-y-2 flex flex-col">
                   <span className="">
-                    <strong className="text-purple-600">Name:</strong>{" "}
+                    <strong className="text-violet-600">Name:</strong>{" "}
                     <span className="text-gray-700">{selectedHr.hr_name}</span>
                   </span>
                   <span className="">
-                    <strong className="text-purple-600">Company:</strong>{" "}
+                    <strong className="text-violet-600">Company:</strong>{" "}
                     <span className="text-gray-700">{selectedHr.company}</span>
                   </span>
                   <span className="">
-                    <strong className="text-purple-600">Address:</strong>{" "}
+                    <strong className="text-violet-600">Address:</strong>{" "}
                     <span className="text-gray-700">{selectedHr.address}</span>
                   </span>
                   <span className="">
-                    <strong className="text-purple-600">Internship:</strong>{" "}
+                    <strong className="text-violet-600">Internship:</strong>{" "}
                     <span className="text-gray-700">
                       {selectedHr.internship}
                     </span>
                   </span>
                   <span className="">
-                    <strong className="text-purple-600">Comments:</strong>{" "}
+                    <strong className="text-violet-600">Comments:</strong>{" "}
                     <span className="text-gray-700">{selectedHr.comments}</span>
                   </span>
                 </span>
@@ -345,7 +345,7 @@ export default function HrDetails() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction className="bg-purple-600 hover:bg-purple-700">
+            <AlertDialogAction className="bg-violet-600 hover:bg-violet-700">
               Close
             </AlertDialogAction>
           </AlertDialogFooter>
