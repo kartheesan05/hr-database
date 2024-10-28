@@ -74,7 +74,6 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
       </div>
       <div>
         <Label
-          htmlFor="interviewMode"
           className="block text-sm font-medium text-gray-700"
         >
           Interview Mode
