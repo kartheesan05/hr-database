@@ -1,5 +1,4 @@
 import "./globals.css";
-import "./custom.scss";
 
 export const metadata = {
   title: "HR Database",
