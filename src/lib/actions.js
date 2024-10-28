@@ -105,7 +105,6 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
       totalCount,
     };
   } catch (error) {
-    console.error("Error fetching HR data:", error);
     throw error;
   }
 }

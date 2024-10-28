@@ -52,7 +52,6 @@ export default function HrDetails() {
         setCurrentPage(1);
       }
     } catch (error) {
-      console.error("Error fetching HR data:", error);
       setError("An error occurred while fetching HR data. Please try again.");
     } finally {
       setIsLoading(false);

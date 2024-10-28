@@ -10,7 +10,6 @@ export async function getUser(email) {
     const result = await db.query(query, values);
     return result.rows[0] || null;
   } catch (error) {
-    console.error('Error fetching user:', error);
     throw error;
   }
 }
