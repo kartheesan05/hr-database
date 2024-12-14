@@ -9,18 +9,20 @@ import { Label } from "@/components/ui/label"
 import { login } from "@/lib/actions"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
-
+import { useRouter } from "next/navigation"
 function LoginButton() {
   const { pending } = useFormStatus()
   return <Button type="submit" className="w-full bg-blue-800 hover:bg-blue-900 text-white" disabled={pending}>{pending ? "Logging in..." : "Login"}</Button>
 }
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [state, formAction] = useActionState(login, {})
 
   const handleSubmit = async (formData) => {
     await formAction(formData)
+    // router.push("/")
   }
 
   return (
@@ -60,9 +62,9 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            {state.errors && (
+            {state?.errors && (
               <div className="text-red-500 text-sm text-center">
-                {state.errors === "invaliduser" ? "Invalid email or password" : state.errors}
+                {state?.errors === "invaliduser" ? "Invalid email or password" : state?.errors}
               </div>
             )}
             <LoginButton />

@@ -5,7 +5,9 @@ export const metadata = {
   description: "HR Database for Forese Task",
 };
 
+
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en">
       <body>

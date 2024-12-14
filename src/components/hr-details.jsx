@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getHrData } from "@/lib/actions";
@@ -82,21 +80,16 @@ export default function HrDetails() {
   };
 
   return (
+    <>
     <div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
-      <Button
-        onClick={handleLogout}
-        className="absolute top-4 right-4 bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
-      >
-        <LogOut className="mr-2 h-4 w-4" />
-        Logout
-      </Button>
-      <Card className="mb-6 border-blue-200 shadow-blue-100 rounded-lg">
-        <CardHeader className="bg-blue-100 rounded-t-lg mb-4">
+      
+      <Card className="mb-6  shadow-blue-100 rounded-lg">
+        {/* <CardHeader className="bg-blue-100 rounded-t-lg mb-4">
           <CardTitle className="text-blue-800 text-center text-3xl font-bold">
             HR Database
           </CardTitle>
-        </CardHeader>
-        <CardContent className="bg-white rounded-lg">
+        </CardHeader> */}
+        <CardContent className="pt-6 bg-white rounded-lg">
           <SearchForm
             searchParams={searchParams}
             setSearchParams={setSearchParams}
@@ -136,8 +129,9 @@ export default function HrDetails() {
       <HrDetailsDialog 
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
-        selectedHr={selectedHr}
-      />
-    </div>
+          selectedHr={selectedHr}
+        />
+      </div>
+    </>
   );
-}
+} 

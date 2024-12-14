@@ -12,7 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function SearchForm({ onSearch, searchParams, setSearchParams }) {
+export default function SearchForm({
+  onSearch,
+  searchParams,
+  setSearchParams,
+}) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
@@ -31,7 +35,7 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
               name: e.target.value.trim(),
             })
           }
-          className="border-blue-200 focus:ring-blue-500"
+          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div>
@@ -50,7 +54,7 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
               phoneNumber: e.target.value.trim(),
             })
           }
-          className="border-blue-200 focus:ring-blue-500"
+          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div>
@@ -69,13 +73,11 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
               email: e.target.value.trim(),
             })
           }
-          className="border-blue-200 focus:ring-blue-500"
+          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div>
-        <Label
-          className="block text-sm font-medium text-gray-700"
-        >
+        <Label className="block text-sm font-medium text-gray-700">
           Interview Mode
         </Label>
         <Select
@@ -87,7 +89,9 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
             })
           }
         >
-          <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+          <SelectTrigger
+          // className="border-blue-200 focus:ring-blue-500"
+          >
             <SelectValue placeholder="Interview Mode" />
           </SelectTrigger>
           <SelectContent>
@@ -110,7 +114,7 @@ export default function SearchForm({ onSearch, searchParams, setSearchParams }) 
           onChange={(e) =>
             setSearchParams({ ...searchParams, company: e.target.value })
           }
-          className="border-blue-200 focus:ring-blue-500"
+          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div className="flex items-end">

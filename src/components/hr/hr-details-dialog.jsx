@@ -7,8 +7,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 export default function HrDetailsDialog({ isOpen, onOpenChange, selectedHr }) {
+  const router = useRouter();
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -41,7 +44,13 @@ export default function HrDetailsDialog({ isOpen, onOpenChange, selectedHr }) {
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
+        <AlertDialogFooter className="flex w-full justify-between">
+          <AlertDialogAction
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => router.push(`/edit-hr?id=${selectedHr?.id}`)}
+          >
+            Edit
+          </AlertDialogAction>
           <AlertDialogAction className="bg-blue-800 hover:bg-blue-900">
             Close
           </AlertDialogAction>

@@ -3,6 +3,7 @@
 import db from "./db";
 import { LoginFormSchema } from "@/lib/definitions";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 import { getUser } from "@/lib/util";
 import bcrypt from "bcryptjs";
 import { createSession, deleteSession, getSession } from "@/lib/session";
@@ -20,37 +21,47 @@ export async function login(state, formData) {
   }
 
   const { email, password } = validatedFields.data;
+  
   try {
     const user = await getUser(email);
     if (!user) {
+      console.log('1invalid user')
       return { errors: "invaliduser" };
     }
+    
     const validPassword = await bcrypt.compare(password, user.password);
 
-    if (validPassword) {
-      await createSession({
-        email: user.email,
-        role: user.role,
-      });
-    } else {
+    if (!validPassword) {
+      console.log('invalid user')
       return { errors: "invaliduser" };
     }
-  } catch (error) {
-    return { errors: "servererror" };
-  }
 
-  redirect("/");
+    // Only create session and redirect if password is valid
+    await createSession({
+      email: user.email,
+      role: user.role,
+    });
+    
+    
+  } catch (error) {
+    console.log("server error")
+    console.log(error)
+    return { errors: "servererror" };
+  } finally {
+    console.log('redirecting')
+    redirect('/');
+  }
 }
 
 export async function logout() {
   deleteSession();
-  redirect("/login");
+  redirect("/auth/login");
 }
 
 export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   const session = await getSession();
   if (!session?.email) {
-    throw new Error("Unauthorized");
+    return { errors: "Unauthorized" };
   }
 
   const offset = (page - 1) * pageSize;
@@ -66,8 +77,9 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   } else if (session.role === 'incharge') {
     whereConditions.push("incharge_email = $" + (queryParams.length + 1));
     queryParams.push(session.email);
+  }else if(session.role !== 'admin'){
+    return { errors: "Unauthorized" };
   }
-  // Admin gets all records (no additional where clause needed)
 
   // Search filters
   if (searchParams.name) {
@@ -210,5 +222,116 @@ export async function addUser(state, data) {
   } catch (error) {
     console.error("Error adding user:", error);
     return { errors: "Server Error" };
+  }
+}
+
+export async function getHR(id) {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+
+  const query = `
+    SELECT * FROM hr_contacts WHERE id = $1
+  `;
+
+  try {
+    const result = await db.query(query, [id]);
+    if (result.rows.length === 0) {
+      return { errors: "HR record not found" };
+    }
+
+    const hrRecord = result.rows[0];
+
+    // Check permissions based on role
+    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+      return { errors: "Unauthorized - You can only view your own records" };
+    }
+
+    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
+      return { errors: "Unauthorized - You can only view records assigned to you" };
+    }
+
+    return { data: hrRecord };
+  } catch (error) {
+    console.error("Error fetching HR record:", error);
+    return { errors: "Server Error" };
+  }
+}
+
+export async function editHR(id, formData) {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+
+  // First check if the user has permission to edit this record
+  const checkQuery = `
+    SELECT * FROM hr_contacts WHERE id = $1
+  `;
+
+  try {
+    const checkResult = await db.query(checkQuery, [id]);
+    if (checkResult.rows.length === 0) {
+      return { errors: "HR record not found" };
+    }
+
+    const hrRecord = checkResult.rows[0];
+
+    // Check permissions based on role
+    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+      return { errors: "Unauthorized - You can only edit your own records" };
+    }
+
+    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
+      return { errors: "Unauthorized - You can only edit records assigned to you" };
+    }
+
+    // Admin can edit all records, so no additional check needed for admin role
+
+    const query = `
+      UPDATE hr_contacts SET
+        hr_name = $1,
+        phone_number = $2,
+        email = $3,
+        interview_mode = $4,
+        company = $5,
+        volunteer = $6,
+        incharge = $7,
+        status = $8,
+        hr_count = $9,
+        transport = $10,
+        address = $11,
+        internship = $12,
+        comments = $13
+      WHERE id = $14
+      RETURNING *
+    `;
+
+    const values = [
+      formData.hr_name,
+      formData.phone_number,
+      formData.email,
+      formData.interview_mode,
+      formData.company,
+      formData.volunteer,
+      formData.incharge,
+      formData.status,
+      formData.hr_count ? parseInt(formData.hr_count) : 0,
+      formData.transport,
+      formData.address || "",
+      formData.internship || "No",
+      formData.comments || "",
+      id
+    ];
+
+    const result = await db.query(query, values);
+    if (result.rows.length === 0) {
+      return { errors: "HR record not found" };
+    }
+    return { data: result.rows[0] };
+  } catch (error) {
+    console.error("Error updating HR record:", error);
+    return { errors: "Failed to update HR record" };
   }
 }
