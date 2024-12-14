@@ -30,6 +30,7 @@ export async function login(state, formData) {
     if (validPassword) {
       await createSession({
         email: user.email,
+        role: user.role,
       });
     } else {
       return { errors: "invaliduser" };
@@ -57,6 +58,18 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   const queryParams = [];
 
   const whereConditions = [];
+  
+  // Role-based filtering
+  if (session.role === 'volunteer') {
+    whereConditions.push("volunteer_email = $" + (queryParams.length + 1));
+    queryParams.push(session.email);
+  } else if (session.role === 'incharge') {
+    whereConditions.push("incharge_email = $" + (queryParams.length + 1));
+    queryParams.push(session.email);
+  }
+  // Admin gets all records (no additional where clause needed)
+
+  // Search filters
   if (searchParams.name) {
     whereConditions.push("hr_name ILIKE $" + (queryParams.length + 1));
     queryParams.push(`%${searchParams.name}%`);
@@ -129,8 +142,10 @@ export async function addHrRecord(formData) {
       transport,
       address,
       internship,
-      comments
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      comments,
+      incharge_email,
+      volunteer_email
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
     RETURNING *
   `;
 
@@ -147,7 +162,9 @@ export async function addHrRecord(formData) {
     formData.transport,
     formData.address || "",
     formData.internship || "No",
-    formData.comments || ""
+    formData.comments || "",
+    "ed@forese.co.in",
+    session.email
   ];
 
   try {
@@ -160,6 +177,17 @@ export async function addHrRecord(formData) {
 }
 
 export async function addUser(state, data) {
+
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+
+  if (session.role !== "admin") {
+    console.log(session.role);
+    return { errors: "Unauthorized" };
+  }
+
   if (!data.email || !data.password || !data.role) {
     console.log(data);
     return { errors: "All fields are required" };

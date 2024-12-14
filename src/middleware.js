@@ -4,11 +4,13 @@ import { cookies } from "next/headers";
 
 const protectedRoutes = ["/", "/result"];
 const loginRoutes = ["/login"];
+const adminRoutes = ["/add-user"];
 
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
   const isLoginRoute = loginRoutes.includes(path);
+  const isAdminRoute = adminRoutes.includes(path);
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
 
@@ -17,6 +19,10 @@ export default async function middleware(req) {
   }
 
   if (isLoginRoute && session?.email) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
+
+  if (isAdminRoute && session?.role !== "admin") {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
