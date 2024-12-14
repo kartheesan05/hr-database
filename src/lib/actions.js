@@ -108,3 +108,79 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
     throw error;
   }
 }
+
+export async function addHrRecord(formData) {
+  const session = await getSession();
+  if (!session?.email) {
+    throw new Error("Unauthorized");
+  }
+
+  const query = `
+    INSERT INTO hr_contacts (
+      hr_name,
+      phone_number,
+      email,
+      interview_mode,
+      company,
+      volunteer,
+      incharge,
+      status,
+      hr_count,
+      transport,
+      address,
+      internship,
+      comments
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    RETURNING *
+  `;
+
+  const values = [
+    formData.hr_name,
+    formData.phone_number,
+    formData.email,
+    formData.interview_mode,
+    formData.company,
+    formData.volunteer,
+    formData.incharge,
+    formData.status,
+    formData.hr_count ? parseInt(formData.hr_count) : 0,
+    formData.transport,
+    formData.address || "",
+    formData.internship || "No",
+    formData.comments || ""
+  ];
+
+  try {
+    const result = await db.query(query, values);
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error adding HR record:", error);
+    throw new Error("Failed to add HR record");
+  }
+}
+
+export async function addUser(state, data) {
+  if (!data.email || !data.password || !data.role) {
+    console.log(data);
+    return { errors: "All fields are required" };
+  }
+
+  
+
+  const { email, password, role } = data;
+  
+  const query = `
+    INSERT INTO users (email, password, role) VALUES ($1, $2, $3)
+  `;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const values = [email, hashedPassword, role];
+
+    await db.query(query, values);
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding user:", error);
+    return { errors: "servererror" };
+  }
+}
