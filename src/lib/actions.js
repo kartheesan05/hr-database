@@ -209,6 +209,6 @@ export async function addUser(state, data) {
     return { success: true };
   } catch (error) {
     console.error("Error adding user:", error);
-    return { errors: "servererror" };
+    return { errors: "Server Error" };
   }
 }
