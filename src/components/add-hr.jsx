@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +20,7 @@ export default function AddHr() {
     email: "",
     phone_number: "",
     status: "Pending",
-    interview_mode: "",
+    interview_mode: "Online",
     hr_count: "",
     transport: "",
     address: "",
@@ -79,19 +78,8 @@ export default function AddHr() {
     }
   };
 
-  const handleLogout = () => {
-    document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/login");
-  };
-
   return (
     (<div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
-      <Button
-        onClick={handleLogout}
-        className="absolute top-4 right-4 bg-white hover:bg-blue-100 text-blue-800 border border-neutral-200 dark:border-neutral-800">
-        <LogOut className="mr-2 h-4 w-4" />
-        Logout
-      </Button>
       <Card className="mb-6 border-blue-200 shadow-blue-100 rounded-lg">
         <CardHeader className="bg-blue-100 rounded-t-lg mb-4">
           <CardTitle className="text-blue-800 text-center text-3xl font-bold">

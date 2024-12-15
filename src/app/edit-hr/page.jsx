@@ -1,7 +1,13 @@
 import EditHr from "@/components/edit-hr";
+import Navbar from "@/components/navbar";
 
 function Page() {
-  return <EditHr />;
+  return (
+    <>
+      <Navbar />
+      <EditHr />
+    </>
+  );
 }
 
-export default Page
+export default Page;

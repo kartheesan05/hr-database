@@ -3,7 +3,7 @@ import Navbar from "@/components/navbar";
 function Page() {
   return (
     <>
-      <Navbar />
+      <Navbar hrpage={true} />
       <HrDetails />
     </>
   );
