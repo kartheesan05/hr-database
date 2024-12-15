@@ -84,7 +84,9 @@ export default function AddUser() {
           <CardFooter className="flex flex-col space-y-4">
             {state.errors && (
               <div className="text-red-500 text-sm text-center">
-                {state.errors}
+                {typeof state.errors === 'object' 
+                  ? Object.values(state.errors).join(', ')
+                  : state.errors}
               </div>
             )}
             {state.success && (

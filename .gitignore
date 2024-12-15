@@ -49,3 +49,8 @@ dist
 
 # Optional TypeScript cache
 *.tsbuildinfo
+
+
+bun.lockb
+bunfig.toml
+yarn.lock

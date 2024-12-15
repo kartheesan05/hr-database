@@ -31,7 +31,7 @@ export default function LoginPage() {
             </span>
           </CardDescription>
         </CardHeader>
-        <form action={handleSubmit}>
+        <form action={formAction}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -74,11 +74,13 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            {state?.errors && (
+            {state.errors && (
               <div className="text-red-500 text-sm text-center">
-                {state?.errors === "invaliduser"
-                  ? "Invalid email or password"
-                  : state?.errors}
+                {typeof state.errors === 'string' 
+                  ? (state.errors === "invaliduser" ? "Invalid email or password" : state.errors)
+                  : Object.values(state.errors).map((error, index) => (
+                      <div key={index}>{error}</div>
+                    ))}
               </div>
             )}
             <Button

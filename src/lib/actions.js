@@ -1,9 +1,8 @@
 "use server";
 
 import db from "./db";
-import { LoginFormSchema } from "@/lib/definitions";
+import { LoginFormSchema, AddUserSchema } from "@/lib/definitions";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { getUser } from "@/lib/util";
 import bcrypt from "bcryptjs";
 import { createSession, deleteSession, getSession } from "@/lib/session";
@@ -15,6 +14,7 @@ export async function login(state, formData) {
   });
 
   if (!validatedFields.success) {
+    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
     };
@@ -25,14 +25,12 @@ export async function login(state, formData) {
   try {
     const user = await getUser(email);
     if (!user) {
-      console.log('1invalid user')
       return { errors: "invaliduser" };
     }
     
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      console.log('invalid user')
       return { errors: "invaliduser" };
     }
 
@@ -47,10 +45,9 @@ export async function login(state, formData) {
     console.log("server error")
     console.log(error)
     return { errors: "servererror" };
-  } finally {
-    console.log('redirecting')
-    redirect('/');
   }
+  console.log("redirecting");
+  redirect("/");
 }
 
 export async function logout() {
@@ -188,26 +185,29 @@ export async function addHrRecord(formData) {
   }
 }
 
-export async function addUser(state, data) {
-
+export async function addUser(state, formData) {
   const session = await getSession();
   if (!session?.email) {
     return { errors: "Unauthorized" };
   }
 
   if (session.role !== "admin") {
-    console.log(session.role);
     return { errors: "Unauthorized" };
   }
 
-  if (!data.email || !data.password || !data.role) {
-    console.log(data);
-    return { errors: "All fields are required" };
+  const validatedFields = AddUserSchema.safeParse({
+    email: formData.email,
+    password: formData.password,
+    role: formData.role,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
   }
 
-  
-
-  const { email, password, role } = data;
+  const { email, password, role } = validatedFields.data;
   
   const query = `
     INSERT INTO users (email, password, role) VALUES ($1, $2, $3)
