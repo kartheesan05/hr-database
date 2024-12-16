@@ -27,6 +27,7 @@ export const users = pgTable("users", {
 	email: varchar({ length: 255 }).notNull(),
 	password: varchar({ length: 255 }).notNull(),
 	role: varchar({ length: 20 }),
+	inchargeEmail: varchar("incharge_email", { length: 255 }),
 }, (table) => [
 	unique("users_email_key").on(table.email),
 ]);

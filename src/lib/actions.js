@@ -14,20 +14,20 @@ export async function login(state, formData) {
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
+    console.log(validatedFields.error.flatten().fieldErrors);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
   const { email, password } = validatedFields.data;
-  
+
   try {
     const user = await getUser(email);
     if (!user) {
       return { errors: "invaliduser" };
     }
-    
+
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
@@ -39,11 +39,9 @@ export async function login(state, formData) {
       email: user.email,
       role: user.role,
     });
-    
-    
   } catch (error) {
-    console.log("server error")
-    console.log(error)
+    console.log("server error");
+    console.log(error);
     return { errors: "servererror" };
   }
   console.log("redirecting");
@@ -66,15 +64,15 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   const queryParams = [];
 
   const whereConditions = [];
-  
+
   // Role-based filtering
-  if (session.role === 'volunteer') {
+  if (session.role === "volunteer") {
     whereConditions.push("volunteer_email = $" + (queryParams.length + 1));
     queryParams.push(session.email);
-  } else if (session.role === 'incharge') {
+  } else if (session.role === "incharge") {
     whereConditions.push("incharge_email = $" + (queryParams.length + 1));
     queryParams.push(session.email);
-  }else if(session.role !== 'admin'){
+  } else if (session.role !== "admin") {
     return { errors: "Unauthorized" };
   }
 
@@ -173,7 +171,7 @@ export async function addHrRecord(formData) {
     formData.internship || "No",
     formData.comments || "",
     "ed@forese.co.in",
-    session.email
+    session.email,
   ];
 
   try {
@@ -201,6 +199,8 @@ export async function addUser(state, formData) {
     role: formData.role,
   });
 
+  const inchargeEmail = formData.inchargeEmail;
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -208,14 +208,32 @@ export async function addUser(state, formData) {
   }
 
   const { email, password, role } = validatedFields.data;
-  
+
+  // If role is volunteer, verify that the incharge exists
+  if (role === 'volunteer') {
+    console.log("inchargeEmail", inchargeEmail);
+    const inchargeQuery = 'SELECT * FROM users WHERE email = $1 AND role = $2';
+    const inchargeResult = await db.query(inchargeQuery, [inchargeEmail, 'incharge']);
+    
+    if (inchargeResult.rows.length === 0) {
+      // console.log("inchargeResult", inchargeResult);
+      return { errors: "Specified incharge email does not exist or is not an incharge" };
+    }
+  }
+
   const query = `
-    INSERT INTO users (email, password, role) VALUES ($1, $2, $3)
+    INSERT INTO users (email, password, role, incharge_email) 
+    VALUES ($1, $2, $3, $4)
   `;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const values = [email, hashedPassword, role];
+    const values = [
+      email, 
+      hashedPassword, 
+      role, 
+      role === 'volunteer' ? inchargeEmail : null
+    ];
 
     await db.query(query, values);
     return { success: true };
@@ -244,14 +262,26 @@ export async function getHR(id) {
     const hrRecord = result.rows[0];
 
     // Check permissions based on role
-    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+    if (
+      session.role === "volunteer" &&
+      hrRecord.volunteer_email !== session.email
+    ) {
       return { errors: "Unauthorized - You can only view your own records" };
     }
 
-    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
-      return { errors: "Unauthorized - You can only view records assigned to you" };
+    if (
+      session.role === "incharge" &&
+      hrRecord.incharge_email !== session.email
+    ) {
+      return {
+        errors: "Unauthorized - You can only view records assigned to you",
+      };
     }
 
+    if (session.role === 'volunteer') {
+      const { volunteer_email, incharge_email, ...filteredRecord } = hrRecord;
+      return { data: filteredRecord };
+    }
     return { data: hrRecord };
   } catch (error) {
     console.error("Error fetching HR record:", error);
@@ -290,23 +320,25 @@ export async function editHR(id, formData) {
     // Admin can edit all records, so no additional check needed for admin role
 
     const query = `
-      UPDATE hr_contacts SET
-        hr_name = $1,
-        phone_number = $2,
-        email = $3,
-        interview_mode = $4,
-        company = $5,
-        volunteer = $6,
-        incharge = $7,
-        status = $8,
-        hr_count = $9,
-        transport = $10,
-        address = $11,
-        internship = $12,
-        comments = $13
-      WHERE id = $14
-      RETURNING *
-    `;
+  UPDATE hr_contacts SET
+    hr_name = $1,
+    phone_number = $2,
+    email = $3,
+    interview_mode = $4,
+    company = $5,
+    volunteer = $6,
+    incharge = $7,
+    status = $8,
+    hr_count = $9,
+    transport = $10,
+    address = $11,
+    internship = $12,
+    comments = $13,
+    volunteer_email = COALESCE($14, volunteer_email),
+    incharge_email = COALESCE($15, incharge_email)
+  WHERE id = $16
+  RETURNING *
+`;
 
     const values = [
       formData.hr_name,
@@ -322,7 +354,9 @@ export async function editHR(id, formData) {
       formData.address || "",
       formData.internship || "No",
       formData.comments || "",
-      id
+      formData.volunteer_email,
+      formData.incharge_email,
+      id,
     ];
 
     const result = await db.query(query, values);

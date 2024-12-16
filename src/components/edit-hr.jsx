@@ -44,6 +44,8 @@ function EditHrForm() {
     address: "",
     internship: "No",
     comments: "",
+    volunteer_email: undefined,
+    incharge_email: undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -60,7 +62,10 @@ function EditHrForm() {
           setError(result.errors);
           return;
         }
-        setFormData(result.data);
+        const sanitizedData = Object.fromEntries(
+          Object.entries(result.data).map(([key, value]) => [key, value ?? ""])
+        );
+        setFormData(sanitizedData);
       } catch (error) {
         setError("Failed to load HR data");
       } finally {
@@ -75,7 +80,7 @@ function EditHrForm() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value ?? "",
     }));
   };
 
@@ -275,6 +280,34 @@ function EditHrForm() {
                     </SelectContent>
                   </Select>
                 </div>
+                {formData.volunteer_email !== undefined && (
+                  <>
+                    <div>
+                      <Label htmlFor="volunteer_email">Volunteer Email</Label>
+                      <Input
+                        id="volunteer_email"
+                        name="volunteer_email"
+                        type="email"
+                        value={formData.volunteer_email}
+                        onChange={handleChange}
+                        className="border-blue-200 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="incharge_email">Incharge Email</Label>
+                      <Input
+                        id="incharge_email"
+                        name="incharge_email"
+                        type="email"
+                        value={formData.incharge_email}
+                        onChange={handleChange}
+                        className="border-blue-200 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
               </div>
               <div className="mt-4">
                 <Label htmlFor="comments">Comments</Label>

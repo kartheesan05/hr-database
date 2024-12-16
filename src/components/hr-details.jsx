@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getHrData } from "@/lib/actions";
@@ -27,6 +27,17 @@ export default function HrDetails() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup function to abort any pending requests when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetchHrData();
@@ -37,10 +48,23 @@ export default function HrDetails() {
   }, [searchParams]);
 
   const fetchHrData = async () => {
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
+
     setIsLoading(true);
     setError(null);
     try {
-      const result = await getHrData(currentPage, recordsPerPage, searchParams);
+      const result = await getHrData(
+        currentPage, 
+        recordsPerPage, 
+        searchParams, 
+        abortControllerRef.current.signal
+      );
       setHrData(result.data);
       setTotalCount(result.totalCount);
       if (
@@ -50,7 +74,9 @@ export default function HrDetails() {
         setCurrentPage(1);
       }
     } catch (error) {
-      setError("An error occurred while fetching HR data. Please try again.");
+      if (error.name !== 'AbortError') {
+        setError("An error occurred while fetching HR data. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,8 +90,15 @@ export default function HrDetails() {
   const totalPages = Math.ceil(totalCount / recordsPerPage);
 
   const goToPage = (page) => {
+    if (isNavigating || isLoading) return; // Prevent navigation if already in progress
+    setIsNavigating(true);
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     window.scrollTo({ top: 0, behavior: "smooth" });
+    
+    // Reset navigation lock after a short delay
+    setTimeout(() => {
+      setIsNavigating(false);
+    }, 300);
   };
 
   const showDetails = (hr) => {

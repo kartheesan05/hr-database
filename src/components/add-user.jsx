@@ -19,16 +19,20 @@ import {
 } from "@/components/ui/select";
 import { addUser } from "@/lib/actions";
 import { useActionState } from "react";
+import { useState } from "react";
 
 export default function AddUser() {
   const [state, formAction, isPending] = useActionState(addUser, {});
+  const [selectedRole, setSelectedRole] = useState("");
 
   const handleSubmit = async (formData) => {
     const data = {
       email: formData.get("email"),
       password: formData.get("password"),
       role: formData.get("role"),
+      inchargeEmail: formData.get("inchargeEmail"),
     };
+    console.log("data", data);
     await formAction(data);
   };
 
@@ -69,7 +73,12 @@ export default function AddUser() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Select name="role" required disabled={isPending}>
+              <Select 
+                name="role" 
+                required 
+                disabled={isPending}
+                onValueChange={(value) => setSelectedRole(value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
@@ -80,6 +89,19 @@ export default function AddUser() {
                 </SelectContent>
               </Select>
             </div>
+            {selectedRole === "volunteer" && (
+              <div className="space-y-2">
+                <Label htmlFor="inchargeEmail">Incharge Email</Label>
+                <Input
+                  id="inchargeEmail"
+                  name="inchargeEmail"
+                  type="email"
+                  placeholder="incharge@example.com"
+                  required
+                  disabled={isPending}
+                />
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             {state.errors && (
