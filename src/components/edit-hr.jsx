@@ -50,6 +50,7 @@ function EditHrForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [availableIncharges, setAvailableIncharges] = useState([]);
 
   useEffect(() => {
     const fetchHrData = async () => {
@@ -66,6 +67,7 @@ function EditHrForm() {
           Object.entries(result.data).map(([key, value]) => [key, value ?? ""])
         );
         setFormData(sanitizedData);
+        setAvailableIncharges(result.incharges || []);
       } catch (error) {
         setError("Failed to load HR data");
       } finally {
@@ -287,7 +289,6 @@ function EditHrForm() {
                       <Input
                         id="volunteer_email"
                         name="volunteer_email"
-                        type="email"
                         value={formData.volunteer_email}
                         onChange={handleChange}
                         className="border-blue-200 focus:ring-blue-500"
@@ -296,15 +297,21 @@ function EditHrForm() {
                     </div>
                     <div>
                       <Label htmlFor="incharge_email">Incharge Email</Label>
-                      <Input
-                        id="incharge_email"
-                        name="incharge_email"
-                        type="email"
+                      <Select
                         value={formData.incharge_email}
-                        onChange={handleChange}
-                        className="border-blue-200 focus:ring-blue-500"
-                        required
-                      />
+                        onValueChange={(value) => handleSelectChange("incharge_email", value)}
+                      >
+                        <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                          <SelectValue placeholder="Select incharge email" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableIncharges.map((email) => (
+                            <SelectItem key={email} value={email}>
+                              {email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}

@@ -253,13 +253,22 @@ export async function getHR(id) {
     SELECT * FROM hr_contacts WHERE id = $1
   `;
 
+  // Only fetch incharges
+  const inchargesQuery = `
+    SELECT email FROM users WHERE role = 'incharge'
+  `;
+
   try {
-    const result = await db.query(query, [id]);
-    if (result.rows.length === 0) {
+    const [hrResult, inchargesResult] = await Promise.all([
+      db.query(query, [id]),
+      db.query(inchargesQuery)
+    ]);
+
+    if (hrResult.rows.length === 0) {
       return { errors: "HR record not found" };
     }
 
-    const hrRecord = result.rows[0];
+    const hrRecord = hrResult.rows[0];
 
     // Check permissions based on role
     if (
@@ -280,9 +289,16 @@ export async function getHR(id) {
 
     if (session.role === 'volunteer') {
       const { volunteer_email, incharge_email, ...filteredRecord } = hrRecord;
-      return { data: filteredRecord };
+      return { 
+        data: filteredRecord,
+        incharges: [] // Volunteers can't see incharges
+      };
     }
-    return { data: hrRecord };
+
+    return { 
+      data: hrRecord,
+      incharges: inchargesResult.rows.map(i => i.email)
+    };
   } catch (error) {
     console.error("Error fetching HR record:", error);
     return { errors: "Server Error" };
