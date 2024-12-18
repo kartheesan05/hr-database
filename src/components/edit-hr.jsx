@@ -144,7 +144,7 @@ function EditHrForm() {
 
   const handleDelete = async () => {
     if (
-      !window.confirm(
+      !window?.confirm(
         "Are you sure you want to delete this HR record? This action cannot be undone."
       )
     ) {

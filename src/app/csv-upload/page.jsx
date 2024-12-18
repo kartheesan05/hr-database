@@ -4,7 +4,6 @@ function Page() {
   return (
     <>
       <Navbar />
-      <div>Page</div>
     </>
   )
 }

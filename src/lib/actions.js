@@ -473,3 +473,72 @@ export async function deleteHR(id) {
     return { errors: "Failed to delete HR record" };
   }
 }
+
+export async function getVolunteerStats() {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+  if (session.role !== "incharge") {
+    return { errors: "Unauthorized" };
+  }
+
+  const query = `
+    SELECT 
+      u.name,
+      COUNT(CASE WHEN h.status = 'Email_Sent' THEN 1 END) as "Email Sent",
+      COUNT(CASE WHEN h.status = 'Not_Called' THEN 1 END) as "Not Called",
+      COUNT(CASE WHEN h.status = 'Active' THEN 1 END) as "Accepted",
+      COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
+      COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
+      COUNT(*) as contacts
+    FROM users u
+    LEFT JOIN hr_contacts h ON u.email = h.volunteer_email
+    WHERE u.role = 'volunteer' 
+    AND u.incharge_email = $1
+    GROUP BY u.name
+    ORDER BY u.name
+  `;
+
+  try {
+    const result = await db.query(query, [session.email]);
+    return { data: result.rows };
+  } catch (error) {
+    console.error("Error fetching volunteer stats:", error);
+    return { errors: "Failed to fetch volunteer statistics" };
+  }
+}
+
+export async function getInchargeStats() {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+  if (session.role !== "admin") {
+    return { errors: "Unauthorized" };
+  }
+
+  const query = `
+    SELECT 
+      u.name,
+      COUNT(CASE WHEN h.status = 'Email_Sent' THEN 1 END) as "Email Sent",
+      COUNT(CASE WHEN h.status = 'Not_Called' THEN 1 END) as "Not Called",
+      COUNT(CASE WHEN h.status = 'Active' THEN 1 END) as "Accepted",
+      COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
+      COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
+      COUNT(*) as contacts
+    FROM users u
+    LEFT JOIN hr_contacts h ON u.email = h.incharge_email
+    WHERE u.role = 'incharge'
+    GROUP BY u.name
+    ORDER BY u.name
+  `;
+
+  try {
+    const result = await db.query(query, []);
+    return { data: result.rows };
+  } catch (error) {
+    console.error("Error fetching incharge stats:", error);
+    return { errors: "Failed to fetch incharge statistics" };
+  }
+}
