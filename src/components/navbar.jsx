@@ -16,7 +16,12 @@ function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-10">
       <div className="max-w-screen px-4 mx-auto flex justify-between items-center h-16">
-        <h1 className="text-blue-800 text-2xl font-bold cursor-pointer" onClick={() => router.push("/")}>HR Database</h1>
+        <h1
+          className="text-blue-800 text-2xl font-bold cursor-pointer"
+          onClick={() => router.push("/")}
+        >
+          HR Database
+        </h1>
 
         <div className="flex gap-6">
           <span
@@ -25,13 +30,26 @@ function Navbar() {
           >
             Home
           </span>
-          {localStorage.getItem('role') === 'admin' && (
-            <span
-              onClick={() => router.push("/add-user")}
-              className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
-            >
-              Add User
-            </span>
+          {localStorage.getItem("role") === "admin" && (
+            <>
+              <span
+                onClick={() => router.push("/add-user")}
+                className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Add User
+              </span>
+            </>
+          )}
+          {(localStorage.getItem("role") === "admin" ||
+            localStorage.getItem("role") === "incharge") && (
+            <>
+              <span
+                onClick={() => router.push("/stats")}
+                className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Stats
+              </span>
+            </>
           )}
           <span
             onClick={() => router.push("/add-hr")}

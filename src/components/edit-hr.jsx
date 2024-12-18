@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getHR, editHR } from "@/lib/actions";
+import { getHR, editHR, deleteHR } from "@/lib/actions";
 import { HrContactSchema } from "@/lib/definitions";
 
 export default function EditHr() {
@@ -137,6 +137,34 @@ function EditHrForm() {
       setError(
         "An error occurred while updating the HR record. Please try again."
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this HR record? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorState(null);
+
+    try {
+      startTransition(async () => {
+        const result = await deleteHR(id);
+        if (result.errors) {
+          setErrorState(result.errors);
+          return;
+        }
+        router.push("/");
+      });
+    } catch (error) {
+      setErrorState("An error occurred while deleting the HR record.");
     } finally {
       setIsLoading(false);
     }
@@ -388,12 +416,21 @@ function EditHrForm() {
             </AlertDescription>
           </Alert>
         )}
-        <Button
-          onClick={() => router.push("/")}
-          className="mt-4 bg-white hover:bg-blue-100 text-blue-800 border border-neutral-200 dark:border-neutral-800"
-        >
-          Back to HR Database
-        </Button>
+        <div className="flex gap-4 mt-4">
+          <Button
+            onClick={() => router.push("/")}
+            className="bg-white hover:bg-blue-100 text-blue-800 border border-neutral-200 dark:border-neutral-800"
+          >
+            Back to HR Database
+          </Button>
+          <Button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700 text-white"
+            disabled={isLoading || isPending}
+          >
+            Delete HR Record
+          </Button>
+        </div>
       </div>
     </>
   );

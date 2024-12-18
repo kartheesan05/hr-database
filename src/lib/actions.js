@@ -433,3 +433,43 @@ export async function editHR(id, formData) {
     return { errors: "Failed to update HR record" };
   }
 }
+
+export async function deleteHR(id) {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+
+  // First check if the user has permission to delete this record
+  const checkQuery = `
+    SELECT * FROM hr_contacts WHERE id = $1
+  `;
+
+  try {
+    const checkResult = await db.query(checkQuery, [id]);
+    if (checkResult.rows.length === 0) {
+      return { errors: "HR record not found" };
+    }
+
+    const hrRecord = checkResult.rows[0];
+
+    // Check permissions based on role
+    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+      return { errors: "Unauthorized - You can only delete your own records" };
+    }
+
+    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
+      return { errors: "Unauthorized - You can only delete records assigned to you" };
+    }
+
+    const deleteQuery = `
+      DELETE FROM hr_contacts WHERE id = $1
+    `;
+
+    await db.query(deleteQuery, [id]);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting HR record:", error);
+    return { errors: "Failed to delete HR record" };
+  }
+}
