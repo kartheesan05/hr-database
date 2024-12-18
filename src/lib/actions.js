@@ -489,6 +489,7 @@ export async function getVolunteerStats() {
       COUNT(CASE WHEN h.status = 'Email_Sent' THEN 1 END) as "Email Sent",
       COUNT(CASE WHEN h.status = 'Not_Called' THEN 1 END) as "Not Called",
       COUNT(CASE WHEN h.status = 'Active' THEN 1 END) as "Accepted",
+      COUNT(CASE WHEN h.status = 'Pending' THEN 1 END) as "Pending",
       COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
       COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
       COUNT(*) as contacts
@@ -524,6 +525,7 @@ export async function getInchargeStats() {
       COUNT(CASE WHEN h.status = 'Email_Sent' THEN 1 END) as "Email Sent",
       COUNT(CASE WHEN h.status = 'Not_Called' THEN 1 END) as "Not Called",
       COUNT(CASE WHEN h.status = 'Active' THEN 1 END) as "Accepted",
+      COUNT(CASE WHEN h.status = 'Pending' THEN 1 END) as "Pending",
       COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
       COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
       COUNT(*) as contacts

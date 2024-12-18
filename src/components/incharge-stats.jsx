@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Cell, Pie, PieChart, Label } from "recharts";
 import {
   Card,
@@ -13,6 +13,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 import { getInchargeStats } from "@/lib/actions";
@@ -59,6 +61,14 @@ export default function InchargeStats() {
         0
       ),
       color: "#f97316", // Orange
+    },
+    {
+      status: "Pending",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Pending"]) || 0),
+        0
+      ),
+      color: "#fbbf24", // Yellow/Amber
     },
     {
       status: "Accepted",
@@ -125,7 +135,7 @@ export default function InchargeStats() {
                 Number of contacts managed by each ED
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex justify-center">
               <ChartContainer
                 config={{
                   "Email Sent": {
@@ -135,6 +145,10 @@ export default function InchargeStats() {
                   "Not Called": {
                     label: "Not Called",
                     color: "#f97316",
+                  },
+                  Pending: {
+                    label: "Pending",
+                    color: "#fbbf24",
                   },
                   Accepted: {
                     label: "Accepted",
@@ -149,27 +163,29 @@ export default function InchargeStats() {
                     color: "#1f2937",
                   },
                 }}
-                className="h-[400px]"
+                className="h-[400px] w-full"
               >
                 <BarChart
                   data={memberData}
                   margin={{
                     top: 20,
                     right: 30,
-                    bottom: 60,
+                    bottom: 20,
                     left: 30,
                   }}
                 >
+                  <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="name"
                     tickLine={false}
                     axisLine={false}
-                    tickMargin={30}
+                    tickMargin={10}
                     angle={0}
                     textAnchor="middle"
                   />
-                  <YAxis tickLine={true} axisLine={true} tickMargin={10}  />
+                  <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                   <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
                   {statusData.map((status, index) => (
                     <Bar
                       key={status.status}
@@ -261,6 +277,111 @@ export default function InchargeStats() {
                     </span>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* New Incharge Distribution Chart */}
+          <Card className="max-w-[400px] mx-auto w-full">
+            <CardHeader>
+              <CardTitle>Incharge Distribution</CardTitle>
+              <CardDescription>
+                Distribution of contacts among incharges
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center">
+              <ChartContainer
+                config={{}}
+                className="h-[300px] w-full flex justify-center"
+              >
+                <PieChart width={300} height={300}>
+                  {(() => {
+                    // Calculate the data once
+                    const inchargeData = memberData.map((member, index) => ({
+                      name: member.name,
+                      value: (Object.entries(member)
+                        .filter(([key]) => key !== 'name')
+                        .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0))/2,
+                      color: [
+                        "#3b82f6", "#22c55e", "#f97316", "#8b5cf6",
+                        "#ec4899", "#14b8a6", "#f59e0b", "#6366f1"
+                      ][index % 8]
+                    }));
+                    
+                    
+                    return (
+                      <Pie
+                        data={inchargeData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        strokeWidth={5}
+                      >
+                        {inchargeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                        <Label
+                          content={({ viewBox }) => {
+                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                              return (
+                                <text
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                >
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={viewBox.cy}
+                                    className="fill-foreground text-3xl font-bold"
+                                  >
+                                    {totalContacts}
+                                  </tspan>
+                                  <tspan
+                                    x={viewBox.cx}
+                                    y={(viewBox.cy || 0) + 24}
+                                    className="fill-muted-foreground"
+                                  >
+                                    Contacts
+                                  </tspan>
+                                </text>
+                              );
+                            }
+                          }}
+                        />
+                      </Pie>
+                    );
+                  })()}
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                </PieChart>
+              </ChartContainer>
+              
+              {/* Legend for Incharge Distribution */}
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                {memberData.map((member, index) => {
+                  const totalContacts = (Object.entries(member)
+                    .filter(([key]) => key !== 'name')
+                    .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0))/2;
+                  
+                  return (
+                    <div key={index} className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full"
+                        style={{ 
+                          backgroundColor: [
+                            "#3b82f6", "#22c55e", "#f97316", "#8b5cf6",
+                            "#ec4899", "#14b8a6", "#f59e0b", "#6366f1"
+                          ][index % 8]
+                        }}
+                      />
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                        {member.name} ({totalContacts})
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

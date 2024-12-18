@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Cell, Pie, PieChart, Label } from "recharts";
 import {
   Card,
@@ -13,6 +13,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 import { getVolunteerStats } from "@/lib/actions";
@@ -46,27 +48,50 @@ export default function VolunteerStats() {
   const statusData = [
     {
       status: "Email Sent",
-      value: memberData.reduce((sum, member) => sum + (parseInt(member["Email Sent"]) || 0), 0),
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Email Sent"]) || 0),
+        0
+      ),
       color: "#3b82f6", // Blue
     },
     {
       status: "Not Called",
-      value: memberData.reduce((sum, member) => sum + (parseInt(member["Not Called"]) || 0), 0),
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Not Called"]) || 0),
+        0
+      ),
       color: "#f97316", // Orange
     },
     {
+      status: "Pending",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Pending"]) || 0),
+        0
+      ),
+      color: "#fbbf24", // Yellow/Amber
+    },
+    {
       status: "Accepted",
-      value: memberData.reduce((sum, member) => sum + (parseInt(member["Accepted"]) || 0), 0),
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Accepted"]) || 0),
+        0
+      ),
       color: "#22c55e", // Green
     },
     {
       status: "Declined",
-      value: memberData.reduce((sum, member) => sum + (parseInt(member["Declined"]) || 0), 0),
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Declined"]) || 0),
+        0
+      ),
       color: "#ef4444", // Red
     },
     {
       status: "Blacklisted",
-      value: memberData.reduce((sum, member) => sum + (parseInt(member["Blacklisted"]) || 0), 0),
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Blacklisted"]) || 0),
+        0
+      ),
       color: "#1f2937", // Dark Gray
     },
   ];
@@ -113,7 +138,7 @@ export default function VolunteerStats() {
                 Number of contacts managed by each Member
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex justify-center">
               <ChartContainer
                 config={{
                   "Email Sent": {
@@ -123,6 +148,10 @@ export default function VolunteerStats() {
                   "Not Called": {
                     label: "Not Called",
                     color: "#f97316",
+                  },
+                  "Pending": {
+                    label: "Pending",
+                    color: "#fbbf24",
                   },
                   Accepted: {
                     label: "Accepted",
@@ -137,27 +166,29 @@ export default function VolunteerStats() {
                     color: "#1f2937",
                   },
                 }}
-                className="h-[400px]"
+                className="h-[400px] w-full"
               >
                 <BarChart
                   data={memberData}
                   margin={{
                     top: 20,
                     right: 30,
-                    bottom: 60,
-                    left: 30,
+                    bottom: 40,
+                    left: 10,
                   }}
                 >
+                  <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="name"
                     tickLine={false}
                     axisLine={false}
-                    tickMargin={30}
+                    tickMargin={10}
                     angle={-45}
                     textAnchor="end"
                   />
-                  <YAxis tickLine={true} axisLine={true} tickMargin={10} />
+                  <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                   <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend className="" content={<ChartLegendContent/>} />
                   {statusData.map((status, index) => (
                     <Bar
                       key={status.status}
