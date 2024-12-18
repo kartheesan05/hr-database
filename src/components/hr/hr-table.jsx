@@ -49,7 +49,6 @@ export default function HrTable({
           <TableHead className="text-blue-800 w-[150px] text-center">Status</TableHead>
           <TableHead className="text-blue-800">Interview Mode</TableHead>
           <TableHead className="text-blue-800">HR Count</TableHead>
-          <TableHead className="text-blue-800">Transport</TableHead>
           <TableHead className="text-blue-800">Show Details</TableHead>
         </TableRow>
       </TableHeader>
@@ -102,7 +101,6 @@ export default function HrTable({
             </TableCell>
             <TableCell>{hr.interview_mode}</TableCell>
             <TableCell>{hr.hr_count}</TableCell>
-            <TableCell>{hr.transport}</TableCell>
             <TableCell>
               <Button
                 onClick={() => showDetails(hr)}

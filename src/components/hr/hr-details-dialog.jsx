@@ -33,6 +33,10 @@ export default function HrDetailsDialog({ isOpen, onOpenChange, selectedHr }) {
                   <span className="text-gray-700">{selectedHr.address}</span>
                 </span>
                 <span className="">
+                  <strong className="text-blue-600">Transport:</strong>{" "}
+                  <span className="text-gray-700">{selectedHr.transport}</span>
+                </span>
+                <span className="">
                   <strong className="text-blue-600">Internship:</strong>{" "}
                   <span className="text-gray-700">{selectedHr.internship}</span>
                 </span>

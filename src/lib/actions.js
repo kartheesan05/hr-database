@@ -1,7 +1,7 @@
 "use server";
 
 import db from "./db";
-import { LoginFormSchema, AddUserSchema } from "@/lib/definitions";
+import { LoginFormSchema, AddUserSchema, HrContactSchema } from "@/lib/definitions";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/util";
 import bcrypt from "bcryptjs";
@@ -132,44 +132,57 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
 export async function addHrRecord(formData) {
   const session = await getSession();
   if (!session?.email) {
-    throw new Error("Unauthorized");
+    return { errors: "Unauthorized" };
   }
 
+  // Add schema validation
+  const validatedFields = HrContactSchema.safeParse({
+    hr_name: formData.hr_name,
+    phone_number: formData.phone_number,
+    email: formData.email,
+    interview_mode: formData.interview_mode,
+    company: formData.company,
+    volunteer: formData.volunteer,
+    incharge: formData.incharge,
+    status: formData.status,
+    hr_count: formData.hr_count ? parseInt(formData.hr_count) : 1,
+    transport: formData.transport,
+    address: formData.address,
+    internship: formData.internship || "No",
+    comments: formData.comments
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors
+    };
+  }
+
+  const validatedData = validatedFields.data;
+  
   const query = `
     INSERT INTO hr_contacts (
-      hr_name,
-      phone_number,
-      email,
-      interview_mode,
-      company,
-      volunteer,
-      incharge,
-      status,
-      hr_count,
-      transport,
-      address,
-      internship,
-      comments,
-      incharge_email,
-      volunteer_email
+      hr_name, phone_number, email, interview_mode, company,
+      volunteer, incharge, status, hr_count, transport,
+      address, internship, comments, incharge_email, volunteer_email
     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
     RETURNING *
   `;
 
   const values = [
-    formData.hr_name,
-    formData.phone_number,
-    formData.email,
-    formData.interview_mode,
-    formData.company,
-    formData.volunteer,
-    formData.incharge,
-    formData.status,
-    formData.hr_count ? parseInt(formData.hr_count) : 0,
-    formData.transport,
-    formData.address || "",
-    formData.internship || "No",
-    formData.comments || "",
+    validatedData.hr_name,
+    validatedData.phone_number,
+    validatedData.email,
+    validatedData.interview_mode,
+    validatedData.company,
+    validatedData.volunteer,
+    validatedData.incharge,
+    validatedData.status,
+    validatedData.hr_count,
+    validatedData.transport,
+    validatedData.address,
+    validatedData.internship,
+    validatedData.comments,
     "ed@forese.co.in",
     session.email,
   ];
@@ -179,7 +192,7 @@ export async function addHrRecord(formData) {
     return result.rows[0];
   } catch (error) {
     console.error("Error adding HR record:", error);
-    throw new Error("Failed to add HR record");
+    return { errors: "Failed to add HR record" };
   }
 }
 
@@ -311,6 +324,31 @@ export async function editHR(id, formData) {
     return { errors: "Unauthorized" };
   }
 
+  // Add schema validation
+  const validatedFields = HrContactSchema.safeParse({
+    hr_name: formData.hr_name,
+    phone_number: formData.phone_number,
+    email: formData.email,
+    interview_mode: formData.interview_mode,
+    company: formData.company,
+    volunteer: formData.volunteer,
+    incharge: formData.incharge,
+    status: formData.status,
+    hr_count: formData.hr_count ? parseInt(formData.hr_count) : 1,
+    transport: formData.transport,
+    address: formData.address,
+    internship: formData.internship || "No",
+    comments: formData.comments
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors
+    };
+  }
+
+  const validatedData = validatedFields.data;
+
   // First check if the user has permission to edit this record
   const checkQuery = `
     SELECT * FROM hr_contacts WHERE id = $1
@@ -357,19 +395,19 @@ export async function editHR(id, formData) {
 `;
 
     const values = [
-      formData.hr_name,
-      formData.phone_number,
-      formData.email,
-      formData.interview_mode,
-      formData.company,
-      formData.volunteer,
-      formData.incharge,
-      formData.status,
-      formData.hr_count ? parseInt(formData.hr_count) : 0,
-      formData.transport,
-      formData.address || "",
-      formData.internship || "No",
-      formData.comments || "",
+      validatedData.hr_name,
+      validatedData.phone_number,
+      validatedData.email,
+      validatedData.interview_mode,
+      validatedData.company,
+      validatedData.volunteer,
+      validatedData.incharge,
+      validatedData.status,
+      validatedData.hr_count,
+      validatedData.transport,
+      validatedData.address,
+      validatedData.internship,
+      validatedData.comments,
       formData.volunteer_email,
       formData.incharge_email,
       id,

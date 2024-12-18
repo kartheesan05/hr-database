@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { addHrRecord } from "@/lib/actions";
+import { HrContactSchema } from "@/lib/definitions";
 
 export default function AddHr() {
   const [formData, setFormData] = useState({
@@ -19,18 +26,19 @@ export default function AddHr() {
     company: "",
     email: "",
     phone_number: "",
-    status: "Pending",
+    status: "Not_Called",
     interview_mode: "Online",
     hr_count: 1,
     transport: "",
     address: "",
     internship: "No",
-    comments: ""
+    comments: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const [errorState, setErrorState] = useState(null);
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,12 +58,41 @@ export default function AddHr() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
     setSuccess(false);
+    setErrorState(null);
+    const validatedFields = HrContactSchema.safeParse({
+      hr_name: formData.hr_name,
+      phone_number: formData.phone_number,
+      email: formData.email,
+      interview_mode: formData.interview_mode,
+      company: formData.company,
+      volunteer: formData.volunteer,
+      incharge: formData.incharge,
+      status: formData.status,
+      hr_count: formData.hr_count,
+      transport: formData.transport,
+      address: formData.address,
+      internship: formData.internship,
+      comments: formData.comments,
+    });
+
+    if (!validatedFields.success) {
+      setErrorState(validatedFields.error.flatten().fieldErrors);
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      await addHrRecord(formData);
-      setSuccess(true);
+      console.log(validatedFields.data);
+      startTransition(async () => {
+        const result = await addHrRecord(validatedFields.data);
+        if (result.errors) {
+          setErrorState(result.errors);
+          setIsLoading(false);
+          return;
+        }
+        setSuccess(true);
+      });
       setFormData({
         hr_name: "",
         volunteer: "",
@@ -63,23 +100,25 @@ export default function AddHr() {
         company: "",
         email: "",
         phone_number: "",
-        status: "Pending",
+        status: "Not_Called",
         interview_mode: "",
         hr_count: 1,
         transport: "",
         address: "",
         internship: "No",
-        comments: ""
+        comments: "",
       });
     } catch (error) {
-      setError("An error occurred while adding the HR record. Please try again.");
+      setErrorState(
+        "An error occurred while adding the HR record. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    (<div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
+    <div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
       <Card className="mb-6 border-blue-200 shadow-blue-100 rounded-lg">
         <CardHeader className="bg-blue-100 rounded-t-lg mb-4">
           <CardTitle className="text-blue-800 text-center text-3xl font-bold">
@@ -97,7 +136,8 @@ export default function AddHr() {
                   value={formData.hr_name}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="phone_number">Phone Number</Label>
@@ -107,7 +147,8 @@ export default function AddHr() {
                   value={formData.phone_number}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
@@ -118,13 +159,16 @@ export default function AddHr() {
                   value={formData.email}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                />
               </div>
               <div>
                 <Label>Interview Mode</Label>
                 <Select
                   value={formData.interview_mode}
-                  onValueChange={(value) => handleSelectChange("interview_mode", value)}>
+                  onValueChange={(value) =>
+                    handleSelectChange("interview_mode", value)
+                  }
+                >
                   <SelectTrigger className="border-blue-200 focus:ring-blue-500">
                     <SelectValue placeholder="Interview Mode" />
                   </SelectTrigger>
@@ -143,7 +187,8 @@ export default function AddHr() {
                   value={formData.company}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="volunteer">Volunteer</Label>
@@ -153,7 +198,8 @@ export default function AddHr() {
                   value={formData.volunteer}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="incharge">Incharge</Label>
@@ -163,13 +209,15 @@ export default function AddHr() {
                   value={formData.incharge}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="status">Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value) => handleSelectChange("status", value)}>
+                  onValueChange={(value) => handleSelectChange("status", value)}
+                >
                   <SelectTrigger className="border-blue-200 focus:ring-blue-500">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -193,7 +241,8 @@ export default function AddHr() {
                   value={formData.hr_count}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="transport">Transport</Label>
@@ -203,7 +252,7 @@ export default function AddHr() {
                   value={formData.transport}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                   />
+                />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
@@ -213,13 +262,16 @@ export default function AddHr() {
                   value={formData.address}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                   />
+                />
               </div>
               <div>
                 <Label htmlFor="internship">Internship</Label>
                 <Select
                   value={formData.internship}
-                  onValueChange={(value) => handleSelectChange("internship", value)}>
+                  onValueChange={(value) =>
+                    handleSelectChange("internship", value)
+                  }
+                >
                   <SelectTrigger className="border-blue-200 focus:ring-blue-500">
                     <SelectValue placeholder="Select internship" />
                   </SelectTrigger>
@@ -243,30 +295,37 @@ export default function AddHr() {
             <Button
               type="submit"
               className="w-full bg-blue-800 hover:bg-blue-900"
-              disabled={isLoading}>
-              {isLoading ? "Adding..." : "Add HR Record"}
+              disabled={isLoading}
+            >
+              {isLoading || isPending ? "Adding..." : "Add HR Record"}
             </Button>
           </form>
         </CardContent>
       </Card>
-      {error && (
-        <Alert variant="destructive" className="mb-6">
+      {errorState && (
+        <Alert variant="destructive" className="mb-6 bg-red-100 border-red-400 text-red-700">
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>
+            {typeof errorState === "string"
+              ? errorState
+              : Object.values(errorState).flat().join(", ")}
+          </AlertDescription>
         </Alert>
       )}
       {success && (
         <Alert className="mb-6 bg-green-100 border-green-400 text-green-700">
           <AlertTitle>Success</AlertTitle>
-          <AlertDescription>HR record has been successfully added.</AlertDescription>
+          <AlertDescription>
+            HR record has been successfully added.
+          </AlertDescription>
         </Alert>
       )}
       <Button
         onClick={() => router.push("/")}
-        className="mt-4 bg-white hover:bg-blue-100 text-blue-800 border border-neutral-200 dark:border-neutral-800">
+        className="mt-4 bg-white hover:bg-blue-100 text-blue-800 border border-neutral-200 dark:border-neutral-800"
+      >
         Back to HR Database
       </Button>
-    </div>)
+    </div>
   );
 }
-

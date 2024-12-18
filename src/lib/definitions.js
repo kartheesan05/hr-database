@@ -14,3 +14,30 @@ export const AddUserSchema = LoginFormSchema.extend({
     invalid_type_error: "Invalid role",
   }),
 });
+
+export const HrContactSchema = z.object({
+  hr_name: z.string().min(1, "HR name is required"),
+  volunteer: z.string().min(1, "Volunteer name is required"),
+  incharge: z.string().min(1, "Incharge name is required"),
+  company: z.string().min(1, "Company name is required"),
+  phone_number: z.string()
+    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  status: z.enum([
+    "Pending",
+    "Active",
+    "Inactive",
+    "Email_Sent",
+    "Not_Called",
+    "Blacklisted"
+  ], {
+    required_error: "Status is required"
+  }),
+  // Optional fields
+  email: z.string().email().optional().or(z.literal("")),
+  interview_mode: z.enum(["Online", "In-person", "Both"]).optional(),
+  hr_count: z.number().int().min(1).default(1),
+  transport: z.string().optional().or(z.literal("")),
+  address: z.string().optional().or(z.literal("")),
+  internship: z.enum(["Yes", "No"]).default("No"),
+  comments: z.string().optional().or(z.literal(""))
+});
