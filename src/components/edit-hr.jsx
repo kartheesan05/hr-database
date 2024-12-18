@@ -228,6 +228,9 @@ function EditHrForm() {
                       <SelectItem value="Pending">Pending</SelectItem>
                       <SelectItem value="Active">Accepted</SelectItem>
                       <SelectItem value="Inactive">Declined</SelectItem>
+                      <SelectItem value="Email_Sent">Email Sent</SelectItem>
+                      <SelectItem value="Not_Called">Not Called</SelectItem>
+                      <SelectItem value="Blacklisted">Blacklisted</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -21,7 +21,7 @@ export default function AddHr() {
     phone_number: "",
     status: "Pending",
     interview_mode: "Online",
-    hr_count: "",
+    hr_count: 1,
     transport: "",
     address: "",
     internship: "No",
@@ -65,7 +65,7 @@ export default function AddHr() {
         phone_number: "",
         status: "Pending",
         interview_mode: "",
-        hr_count: "",
+        hr_count: 1,
         transport: "",
         address: "",
         internship: "No",
@@ -177,6 +177,9 @@ export default function AddHr() {
                     <SelectItem value="Pending">Pending</SelectItem>
                     <SelectItem value="Active">Accepted</SelectItem>
                     <SelectItem value="Inactive">Declined</SelectItem>
+                    <SelectItem value="Email_Sent">Email Sent</SelectItem>
+                    <SelectItem value="Not_Called">Not Called</SelectItem>
+                    <SelectItem value="Blacklisted">Blacklisted</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -186,6 +189,7 @@ export default function AddHr() {
                   id="hr_count"
                   name="hr_count"
                   type="number"
+                  min="1"
                   value={formData.hr_count}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
@@ -199,7 +203,7 @@ export default function AddHr() {
                   value={formData.transport}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                   />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
@@ -209,7 +213,7 @@ export default function AddHr() {
                   value={formData.address}
                   onChange={handleChange}
                   className="border-blue-200 focus:ring-blue-500"
-                  required />
+                   />
               </div>
               <div>
                 <Label htmlFor="internship">Internship</Label>

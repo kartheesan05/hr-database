@@ -46,7 +46,7 @@ export default function HrTable({
           <TableHead className="text-blue-800">Company</TableHead>
           <TableHead className="text-blue-800">Email</TableHead>
           <TableHead className="text-blue-800">Number</TableHead>
-          <TableHead className="text-blue-800">Status</TableHead>
+          <TableHead className="text-blue-800 w-[150px] text-center">Status</TableHead>
           <TableHead className="text-blue-800">Interview Mode</TableHead>
           <TableHead className="text-blue-800">HR Count</TableHead>
           <TableHead className="text-blue-800">Transport</TableHead>
@@ -71,13 +71,19 @@ export default function HrTable({
             <TableCell>{hr.company}</TableCell>
             <TableCell>{hr.email}</TableCell>
             <TableCell>{hr.phone_number}</TableCell>
-            <TableCell>
+            <TableCell className="text-center">
               <span
-                className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                className={`px-2 py-1 rounded-full text-xs font-semibold inline-block ${
                   hr.status === "Active"
                     ? "bg-green-100 text-green-800"
                     : hr.status === "Inactive"
                     ? "bg-red-100 text-red-800"
+                    : hr.status === "Email_Sent"
+                    ? "bg-blue-100 text-blue-800"
+                    : hr.status === "Not_Called"
+                    ? "bg-orange-100 text-orange-800"
+                    : hr.status === "Blacklisted"
+                    ? "bg-gray-900 text-white"
                     : "bg-yellow-100 text-yellow-800"
                 }`}
               >
@@ -85,6 +91,12 @@ export default function HrTable({
                   ? "Accepted"
                   : hr.status === "Inactive"
                   ? "Declined"
+                  : hr.status === "Email_Sent"
+                  ? "Email Sent"
+                  : hr.status === "Not_Called"
+                  ? "Not Called"
+                  : hr.status === "Blacklisted"
+                  ? "Blacklisted"
                   : "Pending"}
               </span>
             </TableCell>
