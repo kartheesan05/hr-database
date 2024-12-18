@@ -1,10 +1,10 @@
-import AddUser from '@/components/add-user'
 import Navbar from '@/components/navbar'
+
 function Page() {
   return (
     <>
       <Navbar />
-      <AddUser />
+      <div>Page</div>
     </>
   )
 }

@@ -1,9 +1,13 @@
-import React from 'react'
+import Navbar from '@/components/navbar'
+import HRPitch from '@/components/hr-pitch'
 
-function page() {
+function Page() {
   return (
-    <div>page</div>
+    <>
+      <Navbar />
+      <HRPitch />
+    </>
   )
 }
 
-export default page
+export default Page

@@ -7,7 +7,7 @@ import { getUser } from "@/lib/util";
 import bcrypt from "bcryptjs";
 import { createSession, deleteSession, getSession } from "@/lib/session";
 
-export async function login(state, formData) {
+export async function login(formData) {
   const validatedFields = LoginFormSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -21,6 +21,7 @@ export async function login(state, formData) {
   }
 
   const { email, password } = validatedFields.data;
+  let role = null;
 
   try {
     const user = await getUser(email);
@@ -34,18 +35,16 @@ export async function login(state, formData) {
       return { errors: "invaliduser" };
     }
 
-    // Only create session and redirect if password is valid
     await createSession({
       email: user.email,
       role: user.role,
     });
+    role = user.role;
   } catch (error) {
-    console.log("server error");
-    console.log(error);
     return { errors: "servererror" };
   }
   console.log("redirecting");
-  redirect("/");
+  return { role: role };
 }
 
 export async function logout() {
@@ -85,9 +84,19 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
     whereConditions.push("phone_number ILIKE $" + (queryParams.length + 1));
     queryParams.push(`%${searchParams.phoneNumber}%`);
   }
-  if (searchParams.email) {
-    whereConditions.push("email ILIKE $" + (queryParams.length + 1));
-    queryParams.push(`%${searchParams.email}%`);
+  if (searchParams.search) {
+    whereConditions.push(`(
+    hr_name ILIKE $${queryParams.length + 1} OR
+    phone_number ILIKE $${queryParams.length + 1} OR
+    email ILIKE $${queryParams.length + 1} OR
+    company ILIKE $${queryParams.length + 1} OR
+    volunteer ILIKE $${queryParams.length + 1} OR
+    incharge ILIKE $${queryParams.length + 1} OR
+    status ILIKE $${queryParams.length + 1} OR
+    interview_mode ILIKE $${queryParams.length + 1} OR
+    transport ILIKE $${queryParams.length + 1}
+  )`);
+    queryParams.push(`%${searchParams.search}%`);
   }
   if (searchParams.interview) {
     whereConditions.push(
@@ -95,9 +104,10 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
     );
     queryParams.push(searchParams.interview.toLowerCase());
   }
-  if (searchParams.company) {
-    whereConditions.push("company ILIKE $" + (queryParams.length + 1));
-    queryParams.push(`%${searchParams.company}%`);
+
+  if (searchParams.status) {
+    whereConditions.push("status = $" + (queryParams.length + 1));
+    queryParams.push(searchParams.status);
   }
 
   if (whereConditions.length > 0) {

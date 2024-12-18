@@ -21,6 +21,24 @@ export default function SearchForm({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <Label
+          htmlFor="search"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Search All Fields
+        </Label>
+        <Input
+          id="search"
+          placeholder="Search across all fields..."
+          onChange={(e) =>
+            setSearchParams({
+              ...searchParams,
+              search: e.target.value.trim(),
+            })
+          }
+        />
+      </div>
+      <div>
+        <Label
           htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
@@ -35,7 +53,6 @@ export default function SearchForm({
               name: e.target.value.trim(),
             })
           }
-          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div>
@@ -54,26 +71,6 @@ export default function SearchForm({
               phoneNumber: e.target.value.trim(),
             })
           }
-          // className="border-blue-200 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <Label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </Label>
-        <Input
-          id="email"
-          placeholder="Email"
-          onChange={(e) =>
-            setSearchParams({
-              ...searchParams,
-              email: e.target.value.trim(),
-            })
-          }
-          // className="border-blue-200 focus:ring-blue-500"
         />
       </div>
       <div>
@@ -89,33 +86,42 @@ export default function SearchForm({
             })
           }
         >
-          <SelectTrigger
-          // className="border-blue-200 focus:ring-blue-500"
-          >
+          <SelectTrigger>
             <SelectValue placeholder="Interview Mode" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="Both">Both</SelectItem>
             <SelectItem value="Online">Online</SelectItem>
             <SelectItem value="In-person">In-person</SelectItem>
-            <SelectItem value="Both">Both</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div>
-        <Label
-          htmlFor="company"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Company
+        <Label className="block text-sm font-medium text-gray-700">
+          Status
         </Label>
-        <Input
-          id="company"
-          placeholder="Company"
-          onChange={(e) =>
-            setSearchParams({ ...searchParams, company: e.target.value })
+        <Select
+          id="status"
+          onValueChange={(value) =>
+            setSearchParams({
+              ...searchParams,
+              status: value === "All" ? "" : value,
+            })
           }
-          // className="border-blue-200 focus:ring-blue-500"
-        />
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            <SelectItem value="Not_Called">Not Called</SelectItem>
+            <SelectItem value="Email_Sent">Email Sent</SelectItem>
+            <SelectItem value="Active">Accepted</SelectItem>
+            <SelectItem value="Pending">Pending</SelectItem>
+            <SelectItem value="Inactive">Declined</SelectItem>
+            <SelectItem value="Blacklisted">Blacklisted</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex items-end">
         <Button

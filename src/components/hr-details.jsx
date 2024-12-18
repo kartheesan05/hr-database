@@ -14,9 +14,9 @@ export default function HrDetails() {
   const [searchParams, setSearchParams] = useState({
     name: "",
     phoneNumber: "",
-    email: "",
+    search: "",
     interview: "",
-    company: "",
+    status: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedHr, setSelectedHr] = useState(null);
@@ -106,11 +106,6 @@ export default function HrDetails() {
     setIsDialogOpen(true);
   };
 
-  const handleLogout = () => {
-    document.cookie =
-      "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/login");
-  };
 
   return (
     <>

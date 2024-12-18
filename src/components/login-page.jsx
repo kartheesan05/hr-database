@@ -1,20 +1,32 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/lib/actions"
-import { useActionState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [state, formAction, isPending] = useActionState(login, {})
-
-  const handleSubmit = async (formData) => {
-    await formAction(formData)
+  // const [state, formAction, isPending] = useActionState(login, {})
+  const [isPending, startTransition] = useTransition();
+  const [errorState, setErrorState] = useState(null);
+  const router = useRouter();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    startTransition(async () => {
+      const result = await login(formData);
+      if (result.errors) {
+        setErrorState(result.errors);
+        return;
+      }
+      localStorage.setItem('role', result.role);
+      router.push("/");
+    });
   }
 
   return (
@@ -28,7 +40,7 @@ export default function LoginPage() {
             Enter your email and password to login to your account
           </CardDescription>
         </CardHeader>
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -71,11 +83,11 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            {state.errors && (
+            {errorState && (
               <div className="text-red-500 text-sm text-center">
-                {typeof state.errors === 'string' 
-                  ? (state.errors === "invaliduser" ? "Invalid email or password" : state.errors)
-                  : Object.values(state.errors).map((error, index) => (
+                {typeof errorState === 'string' 
+                  ? (errorState === "invaliduser" ? "Invalid email or password" : errorState)
+                  : Object.values(errorState).map((error, index) => (
                       <div key={index}>{error}</div>
                     ))}
               </div>
