@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getHR, editHR } from "@/lib/actions";
+import { HrContactSchema } from "@/lib/definitions";
 
 export default function EditHr() {
   return (
@@ -48,8 +49,9 @@ function EditHrForm() {
     incharge_email: undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorState, setErrorState] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [availableIncharges, setAvailableIncharges] = useState([]);
 
   useEffect(() => {
@@ -96,17 +98,41 @@ function EditHrForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
+    setErrorState(null);
     setSuccess(false);
 
+    const validatedFields = HrContactSchema.safeParse({
+      hr_name: formData.hr_name,
+      phone_number: formData.phone_number,
+      email: formData.email,
+      interview_mode: formData.interview_mode,
+      company: formData.company,
+      volunteer: formData.volunteer,
+      incharge: formData.incharge,
+      status: formData.status,
+      hr_count: formData.hr_count,
+      transport: formData.transport,
+      address: formData.address,
+      internship: formData.internship,
+      comments: formData.comments,
+    });
+
+    if (!validatedFields.success) {
+      setErrorState(validatedFields.error.flatten().fieldErrors);
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const result = await editHR(id, formData);
-      if (result.errors) {
-        setError(result.errors);
-        return;
-      }
-      setSuccess(true);
-      router.push("/");
+      startTransition(async () => {
+        const result = await editHR(id, validatedFields.data);
+        if (result.errors) {
+          setErrorState(result.errors);
+          return;
+        }
+        setSuccess(true);
+      });
+      // router.push("/");
     } catch (error) {
       setError(
         "An error occurred while updating the HR record. Please try again."
@@ -302,7 +328,9 @@ function EditHrForm() {
                       <Label htmlFor="incharge_email">Incharge Email</Label>
                       <Select
                         value={formData.incharge_email}
-                        onValueChange={(value) => handleSelectChange("incharge_email", value)}
+                        onValueChange={(value) =>
+                          handleSelectChange("incharge_email", value)
+                        }
                       >
                         <SelectTrigger className="border-blue-200 focus:ring-blue-500">
                           <SelectValue placeholder="Select incharge email" />
@@ -332,17 +360,24 @@ function EditHrForm() {
               <Button
                 type="submit"
                 className="w-full bg-blue-800 hover:bg-blue-900"
-                disabled={isLoading}
+                disabled={isLoading || isPending}
               >
-                {isLoading ? "Updating..." : "Update HR Record"}
+                {isLoading || isPending ? "Updating..." : "Update HR Record"}
               </Button>
             </form>
           </CardContent>
         </Card>
-        {error && (
-          <Alert variant="destructive" className="mb-6">
+        {errorState && (
+          <Alert
+            variant="destructive"
+            className="mb-6 bg-red-100 border-red-400 text-red-700"
+          >
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>
+              {typeof errorState === "string"
+                ? errorState
+                : Object.values(errorState).flat().join(", ")}
+            </AlertDescription>
           </Alert>
         )}
         {success && (

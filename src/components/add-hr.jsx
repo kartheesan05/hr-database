@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -295,7 +295,7 @@ export default function AddHr() {
             <Button
               type="submit"
               className="w-full bg-blue-800 hover:bg-blue-900"
-              disabled={isLoading}
+              disabled={isLoading || isPending}
             >
               {isLoading || isPending ? "Adding..." : "Add HR Record"}
             </Button>
