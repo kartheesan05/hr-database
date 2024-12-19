@@ -26,17 +26,17 @@ function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-10">
-      <div className="max-w-screen px-4 mx-auto flex justify-between items-center h-16">
-        <h1
-          className="text-blue-800 text-2xl font-bold cursor-pointer"
-          onClick={() => router.push("/")}
-        >
-          HR Database
-        </h1>
+      <div className="max-w-screen px-4 mx-auto flex justify-between items-center h-16 relative">
+        <div className="absolute left-4 flex items-center gap-2 cursor-pointer" onClick={() => router.push("/")}>
+          <img src="/forese-logo.png" alt="Forese Logo" className="h-[6rem] w-auto" />
+          <h1 className="text-blue-800 text-2xl font-bold">
+            HR Database
+          </h1>
+        </div>
 
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="md:hidden p-2"
+          className="md:hidden ml-auto p-2"
         >
           <svg
             className="w-6 h-6"
@@ -62,7 +62,7 @@ function Navbar() {
           </svg>
         </button>
 
-        <div className="hidden md:flex gap-6">
+        <div className="hidden md:flex gap-6 mx-auto items-center mt-1">
           <span
             onClick={() => router.push("/")}
             className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
@@ -107,6 +107,16 @@ function Navbar() {
           >
             CSV Upload
           </span>
+        </div>
+
+        <div className="hidden md:flex gap-2 absolute right-4">
+          <Button
+            onClick={handleLogout}
+            className="bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
         </div>
 
         <div
@@ -175,16 +185,6 @@ function Navbar() {
           <Button
             onClick={handleLogout}
             className="m-4 bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
-
-        <div className="hidden md:flex gap-2">
-          <Button
-            onClick={handleLogout}
-            className="bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
           >
             <LogOut className="mr-2 h-4 w-4" />
             Logout

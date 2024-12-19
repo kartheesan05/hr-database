@@ -1,16 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useTransition } from "react"
-import { Eye, EyeOff } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { login } from "@/lib/actions"
-import { useRouter } from "next/navigation"
+import { useState, useTransition } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { login } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
   // const [state, formAction, isPending] = useActionState(login, {})
   const [isPending, startTransition] = useTransition();
   const [errorState, setErrorState] = useState(null);
@@ -24,19 +31,24 @@ export default function LoginPage() {
         setErrorState(result.errors);
         return;
       }
-      localStorage.setItem('role', result.role);
-      localStorage.setItem('name', result.name);
-      localStorage.setItem('incharge', result.incharge);
+      localStorage.setItem("role", result.role);
+      localStorage.setItem("name", result.name);
+      localStorage.setItem("incharge", result.incharge);
       router.push("/");
     });
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center bg-blue-50 p-4">
+      <img 
+        src="/login-logo.png" 
+        alt="Forese Logo" 
+        className="w-60 mt-16 mb-8 mr-10"
+      />
+      <Card className="w-full max-w-md mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Login
+            HR Database Login
           </CardTitle>
           <CardDescription className="text-center">
             Enter your email and password to login to your account
@@ -87,8 +99,10 @@ export default function LoginPage() {
           <CardFooter className="flex flex-col space-y-4">
             {errorState && (
               <div className="text-red-500 text-sm text-center">
-                {typeof errorState === 'string' 
-                  ? (errorState === "invaliduser" ? "Invalid email or password" : errorState)
+                {typeof errorState === "string"
+                  ? errorState === "invaliduser"
+                    ? "Invalid email or password"
+                    : errorState
                   : Object.values(errorState).map((error, index) => (
                       <div key={index}>{error}</div>
                     ))}
