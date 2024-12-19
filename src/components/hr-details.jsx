@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getHrData } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import PaginationControls from "@/components/hr/pagination-controls";
 import SearchForm from "@/components/hr/search-form";
 import HrDetailsDialog from "@/components/hr/hr-details-dialog";
