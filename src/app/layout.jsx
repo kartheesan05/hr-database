@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/forese-logo.png" type="image/png" sizes="128x128" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
       </head>
       <body className="bg-blue-50">
         {children}
