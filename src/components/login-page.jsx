@@ -25,6 +25,8 @@ export default function LoginPage() {
         return;
       }
       localStorage.setItem('role', result.role);
+      localStorage.setItem('name', result.name);
+      localStorage.setItem('incharge', result.incharge);
       router.push("/");
     });
   }

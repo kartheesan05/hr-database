@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,7 @@ export default function AddHr() {
     email: "",
     phone_number: "",
     status: "Not_Called",
-    interview_mode: "Online",
+    interview_mode: "Not Confirmed",
     hr_count: 1,
     transport: "",
     address: "",
@@ -101,7 +101,7 @@ export default function AddHr() {
         email: "",
         phone_number: "",
         status: "Not_Called",
-        interview_mode: "",
+        interview_mode: "Not Confirmed",
         hr_count: 1,
         transport: "",
         address: "",
@@ -116,6 +116,16 @@ export default function AddHr() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("role") === "volunteer") {
+      setFormData((prevData) => ({
+        ...prevData,
+        incharge: localStorage.getItem("incharge"),
+        volunteer: localStorage.getItem("name"),
+      }));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
@@ -173,6 +183,7 @@ export default function AddHr() {
                     <SelectValue placeholder="Interview Mode" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="Not Confirmed">Not Confirmed</SelectItem>
                     <SelectItem value="Online">Online</SelectItem>
                     <SelectItem value="In-person">In-person</SelectItem>
                     <SelectItem value="Both">Both</SelectItem>
@@ -191,7 +202,7 @@ export default function AddHr() {
                 />
               </div>
               <div>
-                <Label htmlFor="volunteer">Volunteer</Label>
+                <Label htmlFor="volunteer">Member</Label>
                 <Input
                   id="volunteer"
                   name="volunteer"
@@ -303,7 +314,10 @@ export default function AddHr() {
         </CardContent>
       </Card>
       {errorState && (
-        <Alert variant="destructive" className="mb-6 bg-red-100 border-red-400 text-red-700">
+        <Alert
+          variant="destructive"
+          className="mb-6 bg-red-100 border-red-400 text-red-700"
+        >
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             {typeof errorState === "string"

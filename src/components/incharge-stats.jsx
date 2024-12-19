@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { getInchargeStats } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 
-export default function InchargeStats() {
+export default function InchargeStats({ inchargeEmail }) {
   const [memberData, setMemberData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,11 +28,14 @@ export default function InchargeStats() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const result = await getInchargeStats();
+        const result = await getInchargeStats(inchargeEmail);
+        console.log("result", result);
+        console.log("inchargeEmail", inchargeEmail);
         if (result.errors) {
           setError(result.errors);
         } else {
           setMemberData(result.data);
+          console.log(result.data);
         }
       } catch (err) {
         setError("Failed to fetch statistics");
@@ -97,10 +100,7 @@ export default function InchargeStats() {
   ];
 
   // Calculate total contacts with proper number conversion
-  const totalContacts = statusData.reduce(
-    (sum, item) => sum + (parseInt(item.value) || 0),
-    0
-  );
+  const totalContacts = statusData.reduce((sum, item) => sum + (parseInt(item.value) || 0), 0);
 
   if (isLoading) {
     return (
@@ -111,7 +111,11 @@ export default function InchargeStats() {
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+    return (
+      <div className="text-center py-8 text-red-500">
+        {error}
+      </div>
+    );
   }
 
   if (memberData.length === 0) {
@@ -123,16 +127,15 @@ export default function InchargeStats() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8 mt-16">
-      <h1 className="text-3xl font-bold mb-8 text-blue-800">ED Statistics</h1>
+    <div className="container mx-auto p-6 space-y-8">
       <div className="flex justify-center items-center">
         <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
           {/* Bar Chart */}
-          <Card className="md:col-span-1 lg:col-span-2 max-w-[900px] mx-auto w-full">
+          <Card className="md:col-span-1 lg:col-span-2 max-w-[900px] mx-auto w-full pb-3">
             <CardHeader>
-              <CardTitle>Contacts per ED</CardTitle>
+              <CardTitle>Contacts per Member</CardTitle>
               <CardDescription>
-                Number of contacts managed by each ED
+                Number of contacts managed by each Member
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center">
@@ -170,8 +173,8 @@ export default function InchargeStats() {
                   margin={{
                     top: 20,
                     right: 30,
-                    bottom: 20,
-                    left: 30,
+                    bottom: 40,
+                    left: 10,
                   }}
                 >
                   <CartesianGrid vertical={false} />
@@ -180,12 +183,15 @@ export default function InchargeStats() {
                     tickLine={false}
                     axisLine={false}
                     tickMargin={10}
-                    angle={0}
-                    textAnchor="middle"
+                    angle={-45}
+                    textAnchor="end"
                   />
                   <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
+                    <ChartLegend
+                      className="absolute right-[110px] top-0 mt-6"
+                      content={<ChartLegendContent />}
+                    />
                   {statusData.map((status, index) => (
                     <Bar
                       key={status.status}
@@ -281,13 +287,11 @@ export default function InchargeStats() {
             </CardContent>
           </Card>
 
-          {/* New Incharge Distribution Chart */}
+          {/* Member Distribution Card */}
           <Card className="max-w-[400px] mx-auto w-full">
             <CardHeader>
-              <CardTitle>Incharge Distribution</CardTitle>
-              <CardDescription>
-                Distribution of contacts among incharges
-              </CardDescription>
+              <CardTitle>Contact Distribution by Member</CardTitle>
+              <CardDescription>How contacts are distributed across members</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
               <ChartContainer
@@ -295,94 +299,78 @@ export default function InchargeStats() {
                 className="h-[300px] w-full flex justify-center"
               >
                 <PieChart width={300} height={300}>
-                  {(() => {
-                    // Calculate the data once
-                    const inchargeData = memberData.map((member, index) => ({
+                  <Pie
+                    data={memberData.map((member, index) => ({
                       name: member.name,
-                      value: (Object.entries(member)
-                        .filter(([key]) => key !== 'name')
-                        .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0))/2,
+                      value: parseInt(member.contacts) || 0,
+                      // Using a more pleasing color palette
                       color: [
-                        "#3b82f6", "#22c55e", "#f97316", "#8b5cf6",
-                        "#ec4899", "#14b8a6", "#f59e0b", "#6366f1"
-                      ][index % 8]
-                    }));
-                    
-                    
-                    return (
-                      <Pie
-                        data={inchargeData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        strokeWidth={5}
-                      >
-                        {inchargeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                        <Label
-                          content={({ viewBox }) => {
-                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                              return (
-                                <text
-                                  x={viewBox.cx}
-                                  y={viewBox.cy}
-                                  textAnchor="middle"
-                                  dominantBaseline="middle"
-                                >
-                                  <tspan
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    className="fill-foreground text-3xl font-bold"
-                                  >
-                                    {totalContacts}
-                                  </tspan>
-                                  <tspan
-                                    x={viewBox.cx}
-                                    y={(viewBox.cy || 0) + 24}
-                                    className="fill-muted-foreground"
-                                  >
-                                    Contacts
-                                  </tspan>
-                                </text>
-                              );
-                            }
-                          }}
-                        />
-                      </Pie>
-                    );
-                  })()}
+                        "#3b82f6", // Blue
+                        "#22c55e", // Green
+                        "#f97316", // Orange
+                        "#8b5cf6", // Purple
+                        "#ec4899", // Pink
+                        "#14b8a6", // Teal
+                        "#f59e0b", // Amber
+                        "#6366f1", // Indigo
+                        "#ef4444", // Red
+                        "#84cc16", // Lime
+                      ][index % 10],
+                    }))}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    strokeWidth={5}
+                  >
+                    {memberData.map((_, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={[
+                          "#3b82f6", "#22c55e", "#f97316", "#8b5cf6", 
+                          "#ec4899", "#14b8a6", "#f59e0b", "#6366f1",
+                          "#ef4444", "#84cc16"
+                        ][index % 10]} 
+                      />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        const totalMemberContacts = memberData.reduce(
+                          (sum, member) => sum + (parseInt(member.contacts) || 0),
+                          0
+                        );
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-3xl font-bold"
+                              >
+                                {totalMemberContacts}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 24}
+                                className="fill-muted-foreground"
+                              >
+                                Contacts
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
                   <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                 </PieChart>
               </ChartContainer>
-              
-              {/* Legend for Incharge Distribution */}
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                {memberData.map((member, index) => {
-                  const totalContacts = (Object.entries(member)
-                    .filter(([key]) => key !== 'name')
-                    .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0))/2;
-                  
-                  return (
-                    <div key={index} className="flex items-center gap-2">
-                      <div
-                        className="h-3 w-3 rounded-full"
-                        style={{ 
-                          backgroundColor: [
-                            "#3b82f6", "#22c55e", "#f97316", "#8b5cf6",
-                            "#ec4899", "#14b8a6", "#f59e0b", "#6366f1"
-                          ][index % 8]
-                        }}
-                      />
-                      <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                        {member.name} ({totalContacts})
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
             </CardContent>
           </Card>
         </div>

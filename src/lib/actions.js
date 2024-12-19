@@ -1,7 +1,11 @@
 "use server";
 
 import db from "./db";
-import { LoginFormSchema, AddUserSchema, HrContactSchema } from "@/lib/definitions";
+import {
+  LoginFormSchema,
+  AddUserSchema,
+  HrContactSchema,
+} from "@/lib/definitions";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/util";
 import bcrypt from "bcryptjs";
@@ -22,6 +26,9 @@ export async function login(formData) {
 
   const { email, password } = validatedFields.data;
   let role = null;
+  let user_name = null;
+  let incharge_name = null;
+  let incharge_email = null;
 
   try {
     const user = await getUser(email);
@@ -35,16 +42,28 @@ export async function login(formData) {
       return { errors: "invaliduser" };
     }
 
-    await createSession({
-      email: user.email,
-      role: user.role,
-    });
+    if (user.role === "volunteer") {
+      const incharge = await getUser(user.incharge_email);
+      incharge_name = incharge.name;
+      incharge_email = incharge.email;
+      await createSession({
+        email: user.email,
+        role: user.role,
+        incharge_email: incharge.email,
+      });
+    } else {
+      await createSession({
+        email: user.email,
+        role: user.role,
+      });
+    }
+
     role = user.role;
+    user_name = user.name;
   } catch (error) {
     return { errors: "servererror" };
   }
-  console.log("redirecting");
-  return { role: role };
+  return { role: role, name: user_name, incharge: incharge_name };
 }
 
 export async function logout() {
@@ -159,17 +178,17 @@ export async function addHrRecord(formData) {
     transport: formData.transport,
     address: formData.address,
     internship: formData.internship || "No",
-    comments: formData.comments
+    comments: formData.comments,
   });
 
   if (!validatedFields.success) {
     return {
-      errors: validatedFields.error.flatten().fieldErrors
+      errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
   const validatedData = validatedFields.data;
-  
+
   const query = `
     INSERT INTO hr_contacts (
       hr_name, phone_number, email, interview_mode, company,
@@ -193,7 +212,7 @@ export async function addHrRecord(formData) {
     validatedData.address,
     validatedData.internship,
     validatedData.comments,
-    "ed@forese.co.in",
+    session.role === "volunteer" ? session.incharge_email : session.email,
     session.email,
   ];
 
@@ -220,9 +239,8 @@ export async function addUser(state, formData) {
     email: formData.email,
     password: formData.password,
     role: formData.role,
+    name: formData.name,
   });
-
-  const inchargeEmail = formData.inchargeEmail;
 
   if (!validatedFields.success) {
     return {
@@ -230,32 +248,40 @@ export async function addUser(state, formData) {
     };
   }
 
-  const { email, password, role } = validatedFields.data;
+  const inchargeEmail = formData.inchargeEmail;
+
+  const { email, password, role, name } = validatedFields.data;
 
   // If role is volunteer, verify that the incharge exists
-  if (role === 'volunteer') {
+  if (role === "volunteer") {
     console.log("inchargeEmail", inchargeEmail);
-    const inchargeQuery = 'SELECT * FROM users WHERE email = $1 AND role = $2';
-    const inchargeResult = await db.query(inchargeQuery, [inchargeEmail, 'incharge']);
-    
+    const inchargeQuery = "SELECT * FROM users WHERE email = $1 AND role = $2";
+    const inchargeResult = await db.query(inchargeQuery, [
+      inchargeEmail,
+      "incharge",
+    ]);
+
     if (inchargeResult.rows.length === 0) {
       // console.log("inchargeResult", inchargeResult);
-      return { errors: "Specified incharge email does not exist or is not an incharge" };
+      return {
+        errors: "Specified incharge email does not exist or is not an incharge",
+      };
     }
   }
 
   const query = `
-    INSERT INTO users (email, password, role, incharge_email) 
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO users (email, password, role, incharge_email, name) 
+    VALUES ($1, $2, $3, $4, $5)
   `;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const values = [
-      email, 
-      hashedPassword, 
-      role, 
-      role === 'volunteer' ? inchargeEmail : null
+      email,
+      hashedPassword,
+      role,
+      role === "volunteer" ? inchargeEmail : null,
+      name,
     ];
 
     await db.query(query, values);
@@ -284,7 +310,7 @@ export async function getHR(id) {
   try {
     const [hrResult, inchargesResult] = await Promise.all([
       db.query(query, [id]),
-      db.query(inchargesQuery)
+      db.query(inchargesQuery),
     ]);
 
     if (hrResult.rows.length === 0) {
@@ -310,17 +336,17 @@ export async function getHR(id) {
       };
     }
 
-    if (session.role === 'volunteer') {
+    if (session.role === "volunteer") {
       const { volunteer_email, incharge_email, ...filteredRecord } = hrRecord;
-      return { 
+      return {
         data: filteredRecord,
-        incharges: [] // Volunteers can't see incharges
+        incharges: [], // Volunteers can't see incharges
       };
     }
 
-    return { 
+    return {
       data: hrRecord,
-      incharges: inchargesResult.rows.map(i => i.email)
+      incharges: inchargesResult.rows.map((i) => i.email),
     };
   } catch (error) {
     console.error("Error fetching HR record:", error);
@@ -348,12 +374,12 @@ export async function editHR(id, formData) {
     transport: formData.transport,
     address: formData.address,
     internship: formData.internship || "No",
-    comments: formData.comments
+    comments: formData.comments,
   });
 
   if (!validatedFields.success) {
     return {
-      errors: validatedFields.error.flatten().fieldErrors
+      errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
@@ -373,12 +399,20 @@ export async function editHR(id, formData) {
     const hrRecord = checkResult.rows[0];
 
     // Check permissions based on role
-    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+    if (
+      session.role === "volunteer" &&
+      hrRecord.volunteer_email !== session.email
+    ) {
       return { errors: "Unauthorized - You can only edit your own records" };
     }
 
-    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
-      return { errors: "Unauthorized - You can only edit records assigned to you" };
+    if (
+      session.role === "incharge" &&
+      hrRecord.incharge_email !== session.email
+    ) {
+      return {
+        errors: "Unauthorized - You can only edit records assigned to you",
+      };
     }
 
     // Admin can edit all records, so no additional check needed for admin role
@@ -454,12 +488,20 @@ export async function deleteHR(id) {
     const hrRecord = checkResult.rows[0];
 
     // Check permissions based on role
-    if (session.role === 'volunteer' && hrRecord.volunteer_email !== session.email) {
+    if (
+      session.role === "volunteer" &&
+      hrRecord.volunteer_email !== session.email
+    ) {
       return { errors: "Unauthorized - You can only delete your own records" };
     }
 
-    if (session.role === 'incharge' && hrRecord.incharge_email !== session.email) {
-      return { errors: "Unauthorized - You can only delete records assigned to you" };
+    if (
+      session.role === "incharge" &&
+      hrRecord.incharge_email !== session.email
+    ) {
+      return {
+        errors: "Unauthorized - You can only delete records assigned to you",
+      };
     }
 
     const deleteQuery = `
@@ -474,12 +516,12 @@ export async function deleteHR(id) {
   }
 }
 
-export async function getVolunteerStats() {
+export async function getInchargeStats(inchargeEmail) {
   const session = await getSession();
   if (!session?.email) {
     return { errors: "Unauthorized" };
   }
-  if (session.role !== "incharge") {
+  if (session.role !== "incharge" && session.role !== "admin") {
     return { errors: "Unauthorized" };
   }
 
@@ -502,15 +544,17 @@ export async function getVolunteerStats() {
   `;
 
   try {
-    const result = await db.query(query, [session.email]);
+    const result = await db.query(query, [
+      session.role === "incharge" ? session.email : inchargeEmail,
+    ]);
     return { data: result.rows };
   } catch (error) {
-    console.error("Error fetching volunteer stats:", error);
-    return { errors: "Failed to fetch volunteer statistics" };
+    console.error("Error fetching member stats:", error);
+    return { errors: "Failed to fetch member statistics" };
   }
 }
 
-export async function getInchargeStats() {
+export async function getAdminStats() {
   const session = await getSession();
   if (!session?.email) {
     return { errors: "Unauthorized" };

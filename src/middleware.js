@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 
-const protectedRoutes = ["/"];
+const protectedRoutes = ["/", "/add-hr", "/edit-hr", "/hr-pitch"];
 const loginRoutes = ["/login"];
+const statsRoutes = ["/stats"];
 const adminRoutes = ["/add-user"];
 
 export default async function middleware(req) {
@@ -11,6 +12,7 @@ export default async function middleware(req) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isLoginRoute = loginRoutes.includes(path);
   const isAdminRoute = adminRoutes.includes(path);
+  const isStatsRoute = statsRoutes.includes(path);
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
 
@@ -23,6 +25,10 @@ export default async function middleware(req) {
   }
 
   if (isAdminRoute && session?.role !== "admin") {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
+
+  if (isStatsRoute && session?.role !== "admin" && session?.role !== "incharge") {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 

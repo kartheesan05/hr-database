@@ -27,6 +27,7 @@ export default function AddUser() {
 
   const handleSubmit = async (formData) => {
     const data = {
+      name: formData.get("name"),
       email: formData.get("email"),
       password: formData.get("password"),
       role: formData.get("role"),
@@ -49,6 +50,17 @@ export default function AddUser() {
         </CardHeader>
         <form action={handleSubmit}>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Enter name"
+                required
+                disabled={isPending}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -83,7 +95,7 @@ export default function AddUser() {
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="volunteer">Volunteer</SelectItem>
+                  <SelectItem value="volunteer">Member</SelectItem>
                   <SelectItem value="incharge">In Charge</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>

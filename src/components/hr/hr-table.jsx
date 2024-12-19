@@ -41,7 +41,7 @@ export default function HrTable({
         <TableRow className={cn("bg-blue-100 hover:bg-blue-200")}>
           <TableHead className="text-blue-800 text-center">S.No</TableHead>
           <TableHead className="text-blue-800">HR Name</TableHead>
-          <TableHead className="text-blue-800">Volunteer</TableHead>
+          <TableHead className="text-blue-800">Member</TableHead>
           <TableHead className="text-blue-800">Incharge</TableHead>
           <TableHead className="text-blue-800">Company</TableHead>
           <TableHead className="text-blue-800">Email</TableHead>

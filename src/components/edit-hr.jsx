@@ -38,7 +38,7 @@ function EditHrForm() {
     company: "",
     email: "",
     phone_number: "",
-    status: "Pending",
+    status: "Not_Called",
     interview_mode: "",
     hr_count: "",
     transport: "",
@@ -213,7 +213,6 @@ function EditHrForm() {
                     value={formData.email}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
                   />
                 </div>
                 <div>
@@ -228,6 +227,7 @@ function EditHrForm() {
                       <SelectValue placeholder="Interview Mode" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="Not Confirmed">Not Confirmed</SelectItem>
                       <SelectItem value="Online">Online</SelectItem>
                       <SelectItem value="In-person">In-person</SelectItem>
                       <SelectItem value="Both">Both</SelectItem>
@@ -246,14 +246,13 @@ function EditHrForm() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="volunteer">Volunteer</Label>
+                  <Label htmlFor="volunteer">Member</Label>
                   <Input
                     id="volunteer"
                     name="volunteer"
                     value={formData.volunteer}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
                   />
                 </div>
                 <div>
@@ -264,7 +263,6 @@ function EditHrForm() {
                     value={formData.incharge}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
                   />
                 </div>
                 <div>
@@ -297,7 +295,7 @@ function EditHrForm() {
                     value={formData.hr_count}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
+                    min={1}
                   />
                 </div>
                 <div>
@@ -308,7 +306,6 @@ function EditHrForm() {
                     value={formData.transport}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
                   />
                 </div>
                 <div>
@@ -319,7 +316,6 @@ function EditHrForm() {
                     value={formData.address}
                     onChange={handleChange}
                     className="border-blue-200 focus:ring-blue-500"
-                    required
                   />
                 </div>
                 <div>
@@ -342,14 +338,13 @@ function EditHrForm() {
                 {formData.volunteer_email !== undefined && (
                   <>
                     <div>
-                      <Label htmlFor="volunteer_email">Volunteer Email</Label>
+                      <Label htmlFor="volunteer_email">Member Email</Label>
                       <Input
                         id="volunteer_email"
                         name="volunteer_email"
                         value={formData.volunteer_email}
                         onChange={handleChange}
                         className="border-blue-200 focus:ring-blue-500"
-                        required
                       />
                     </div>
                     <div>
