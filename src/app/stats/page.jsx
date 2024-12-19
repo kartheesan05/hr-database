@@ -71,7 +71,7 @@ function Page() {
         </div>
         {(role === "admin") ? (
           showEdStats ? (
-            inchargeEmail ? <InchargeStats key={inchargeEmail} inchargeEmail={inchargeEmail} /> : <p>Please select an ED</p>
+            inchargeEmail ? <InchargeStats key={inchargeEmail} inchargeEmail={inchargeEmail} /> : <p className="mt-40 text-center text-lg text-red-500">Please select an ED</p>
           ) : (
             <AdminStats />
           )

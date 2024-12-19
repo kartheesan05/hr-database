@@ -10,11 +10,13 @@ function Navbar() {
 
   const [role, setRole] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const userRole = localStorage.getItem("role");
       setRole(userRole);
+      setCurrentPath(window.location.pathname);
     }
   }, []);
 
@@ -22,6 +24,15 @@ function Navbar() {
     document.cookie =
       "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     router.push("/login");
+  };
+
+  const getLinkStyle = (path) => {
+    const baseStyle = "text-blue-800 cursor-pointer font-bold transition-all duration-200 border-b-2";
+    return `${baseStyle} ${
+      currentPath === path
+        ? "border-blue-600"
+        : "border-transparent hover:border-blue-600 hover:text-blue-600"
+    }`;
   };
 
   return (
@@ -65,45 +76,41 @@ function Navbar() {
         <div className="hidden md:flex gap-6 mx-auto items-center mt-1">
           <span
             onClick={() => router.push("/")}
-            className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+            className={getLinkStyle("/")}
           >
             Home
           </span>
           {role === "admin" && (
-            <>
-              <span
-                onClick={() => router.push("/add-user")}
-                className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
-              >
-                Add User
-              </span>
-            </>
+            <span
+              onClick={() => router.push("/add-user")}
+              className={getLinkStyle("/add-user")}
+            >
+              Add User
+            </span>
           )}
           {(role === "admin" || role === "incharge") && (
-            <>
-              <span
-                onClick={() => router.push("/stats")}
-                className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
-              >
-                Stats
-              </span>
-            </>
+            <span
+              onClick={() => router.push("/stats")}
+              className={getLinkStyle("/stats")}
+            >
+              Stats
+            </span>
           )}
           <span
             onClick={() => router.push("/add-hr")}
-            className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+            className={getLinkStyle("/add-hr")}
           >
             Add HR
           </span>
           <span
             onClick={() => router.push("/hr-pitch")}
-            className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+            className={getLinkStyle("/hr-pitch")}
           >
             HR Pitch
           </span>
           <span
             onClick={() => router.push("/csv-upload")}
-            className="text-blue-800 hover:text-blue-600 cursor-pointer font-bold transition-all duration-200 border-b-2 border-transparent hover:border-blue-600"
+            className={getLinkStyle("/csv-upload")}
           >
             CSV Upload
           </span>
@@ -129,7 +136,9 @@ function Navbar() {
               router.push("/");
               setIsMenuOpen(false);
             }}
-            className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+            className={`p-4 cursor-pointer font-bold ${
+              currentPath === "/" ? "bg-blue-50" : "hover:bg-blue-50"
+            } text-blue-800`}
           >
             Home
           </span>
@@ -139,7 +148,9 @@ function Navbar() {
                 router.push("/add-user");
                 setIsMenuOpen(false);
               }}
-              className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+              className={`p-4 cursor-pointer font-bold ${
+                currentPath === "/add-user" ? "bg-blue-50" : "hover:bg-blue-50"
+              } text-blue-800`}
             >
               Add User
             </span>
@@ -150,7 +161,9 @@ function Navbar() {
                 router.push("/stats");
                 setIsMenuOpen(false);
               }}
-              className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+              className={`p-4 cursor-pointer font-bold ${
+                currentPath === "/stats" ? "bg-blue-50" : "hover:bg-blue-50"
+              } text-blue-800`}
             >
               Stats
             </span>
@@ -160,7 +173,9 @@ function Navbar() {
               router.push("/add-hr");
               setIsMenuOpen(false);
             }}
-            className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+            className={`p-4 cursor-pointer font-bold ${
+              currentPath === "/add-hr" ? "bg-blue-50" : "hover:bg-blue-50"
+            } text-blue-800`}
           >
             Add HR
           </span>
@@ -169,7 +184,9 @@ function Navbar() {
               router.push("/hr-pitch");
               setIsMenuOpen(false);
             }}
-            className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+            className={`p-4 cursor-pointer font-bold ${
+              currentPath === "/hr-pitch" ? "bg-blue-50" : "hover:bg-blue-50"
+            } text-blue-800`}
           >
             HR Pitch
           </span>
@@ -178,7 +195,9 @@ function Navbar() {
               router.push("/csv-upload");
               setIsMenuOpen(false);
             }}
-            className="p-4 text-blue-800 hover:bg-blue-50 cursor-pointer font-bold"
+            className={`p-4 cursor-pointer font-bold ${
+              currentPath === "/csv-upload" ? "bg-blue-50" : "hover:bg-blue-50"
+            } text-blue-800`}
           >
             CSV Upload
           </span>
