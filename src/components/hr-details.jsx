@@ -60,9 +60,9 @@ export default function HrDetails() {
     setError(null);
     try {
       const result = await getHrData(
-        currentPage, 
-        recordsPerPage, 
-        searchParams, 
+        currentPage,
+        recordsPerPage,
+        searchParams,
         abortControllerRef.current.signal
       );
       setHrData(result.data);
@@ -74,7 +74,7 @@ export default function HrDetails() {
         setCurrentPage(1);
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
+      if (error.name !== "AbortError") {
         setError("An error occurred while fetching HR data. Please try again.");
       }
     } finally {
@@ -94,7 +94,7 @@ export default function HrDetails() {
     setIsNavigating(true);
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     window.scrollTo({ top: 0, behavior: "smooth" });
-    
+
     // Reset navigation lock after a short delay
     setTimeout(() => {
       setIsNavigating(false);
@@ -106,60 +106,53 @@ export default function HrDetails() {
     setIsDialogOpen(true);
   };
 
-
   return (
     <>
-    <div className="min-h-screen w-screen p-[75px] bg-blue-50 relative">
-      
-      <Card className="mb-6  shadow-blue-100 rounded-lg">
-        {/* <CardHeader className="bg-blue-100 rounded-t-lg mb-4">
-          <CardTitle className="text-blue-800 text-center text-3xl font-bold">
-            HR Database
-          </CardTitle>
-        </CardHeader> */}
-        <CardContent className="pt-6 bg-white rounded-lg">
-          <SearchForm
-            searchParams={searchParams}
-            setSearchParams={setSearchParams}
-            onSearch={handleSearch}
-          />
-        </CardContent>
-      </Card>
-      {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        recordsPerPage={recordsPerPage}
-        onPageChange={goToPage}
-      />
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
-        <HrTable 
-          hrData={hrData}
-          isLoading={isLoading}
+      <div className="min-h-screen w-screen p-4 sm:p-6 md:p-[75px] bg-blue-50 relative">
+        <Card className="mb-6  shadow-blue-100 rounded-lg">
+          <CardContent className="pt-6 bg-white rounded-lg">
+            <SearchForm
+              searchParams={searchParams}
+              setSearchParams={setSearchParams}
+              onSearch={handleSearch}
+            />
+          </CardContent>
+        </Card>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        <PaginationControls
           currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
           recordsPerPage={recordsPerPage}
-          showDetails={showDetails}
+          onPageChange={goToPage}
         />
-      </div>
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        recordsPerPage={recordsPerPage}
-        onPageChange={goToPage}
-      />
-      <HrDetailsDialog 
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+          <HrTable
+            hrData={hrData}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            recordsPerPage={recordsPerPage}
+            showDetails={showDetails}
+          />
+        </div>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          recordsPerPage={recordsPerPage}
+          onPageChange={goToPage}
+        />
+        <HrDetailsDialog
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
           selectedHr={selectedHr}
         />
       </div>
     </>
   );
-} 
+}

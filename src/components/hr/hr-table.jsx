@@ -69,7 +69,9 @@ export default function HrTable({
             <TableCell>{hr.incharge}</TableCell>
             <TableCell>{hr.company}</TableCell>
             <TableCell>{hr.email}</TableCell>
-            <TableCell>{hr.phone_number}</TableCell>
+            <TableCell className="cursor-pointer" onClick={() => {
+              navigator.clipboard.writeText(hr.phone_number);
+            }}>{hr.phone_number}</TableCell>
             <TableCell className="text-center">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold inline-block ${

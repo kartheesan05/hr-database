@@ -415,7 +415,7 @@ function EditHrForm() {
           <Alert className="mb-6 bg-green-100 border-green-400 text-green-700">
             <AlertTitle>Success</AlertTitle>
             <AlertDescription>
-              HR record has been successfully added.
+              HR record has been successfully updated.
             </AlertDescription>
           </Alert>
         )}

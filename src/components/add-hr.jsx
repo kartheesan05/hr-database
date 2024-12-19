@@ -22,7 +22,9 @@ export default function AddHr() {
   const [formData, setFormData] = useState({
     hr_name: "",
     volunteer: "",
+    volunteer_email: "",
     incharge: "",
+    incharge_email: "",
     company: "",
     email: "",
     phone_number: "",
@@ -73,7 +75,7 @@ export default function AddHr() {
       transport: formData.transport,
       address: formData.address,
       internship: formData.internship,
-      comments: formData.comments,
+      comments: formData.comments
     });
 
     if (!validatedFields.success) {
@@ -85,7 +87,7 @@ export default function AddHr() {
     try {
       console.log(validatedFields.data);
       startTransition(async () => {
-        const result = await addHrRecord(validatedFields.data);
+        const result = await addHrRecord({...validatedFields.data, volunteer_email: formData.volunteer_email, incharge_email: formData.incharge_email});
         if (result.errors) {
           setErrorState(result.errors);
           setIsLoading(false);
@@ -107,6 +109,8 @@ export default function AddHr() {
         address: "",
         internship: "No",
         comments: "",
+        volunteer_email: "",
+        incharge_email: "",
       });
     } catch (error) {
       setErrorState(
@@ -117,6 +121,8 @@ export default function AddHr() {
     }
   };
 
+  const [role, setRole] = useState(null);
+
   useEffect(() => {
     if (localStorage.getItem("role") === "volunteer") {
       setFormData((prevData) => ({
@@ -125,6 +131,8 @@ export default function AddHr() {
         volunteer: localStorage.getItem("name"),
       }));
     }
+
+    setRole(localStorage.getItem("role"));
   }, []);
 
   return (
@@ -212,6 +220,22 @@ export default function AddHr() {
                   required
                 />
               </div>
+
+              {(role === 'incharge' || role === 'admin') && (
+                <div>
+                  <Label htmlFor="volunteer_email">Member Email</Label>
+                  <Input
+                    id="volunteer_email"
+                    name="volunteer_email"
+                    type="email"
+                    value={formData.volunteer_email}
+                    onChange={handleChange}
+                    className="border-blue-200 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              )}
+
               <div>
                 <Label htmlFor="incharge">Incharge</Label>
                 <Input
@@ -223,6 +247,22 @@ export default function AddHr() {
                   required
                 />
               </div>
+
+              {role === 'admin' && (
+                <div>
+                  <Label htmlFor="incharge_email">Incharge Email</Label>
+                  <Input
+                    id="incharge_email"
+                    name="incharge_email"
+                    type="email"
+                    value={formData.incharge_email}
+                    onChange={handleChange}
+                    className="border-blue-200 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              )}
+
               <div>
                 <Label htmlFor="status">Status</Label>
                 <Select

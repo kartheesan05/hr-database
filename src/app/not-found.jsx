@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 
 function NotFound() {
   return (
@@ -76,12 +76,12 @@ function NotFound() {
         <br />
         <span className="text-sm">Please adjust your antenna or try a different frequency.</span>
       </p>
-      <a 
-        href="/" 
+      <Link
+        href="/"
         className="mt-6 px-6 py-3 bg-[#d36604] text-white rounded-lg hover:bg-[#e69635] transition-colors duration-200 shadow-lg hover:shadow-xl"
       >
         Return to Home Channel
-      </a>
+      </Link>
     </div>
   );
 }

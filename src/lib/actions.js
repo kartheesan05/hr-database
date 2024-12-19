@@ -186,6 +186,19 @@ export async function addHrRecord(formData) {
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
+  if(session.role === "incharge" && (!formData.volunteer_email || !formData.volunteer_email.includes('@'))){
+    
+    console.log("volunteer_email", formData.volunteer_email);
+    return {
+      errors: "A valid volunteer email is required",
+    };
+  }
+
+  if(session.role === "admin" && (!formData.incharge_email || !formData.volunteer_email || !formData.incharge_email.includes('@') || !formData.volunteer_email.includes('@'))){
+    return {
+      errors: "Both incharge and volunteer emails are required and must be valid",
+    };
+  }
 
   const validatedData = validatedFields.data;
 
@@ -212,8 +225,8 @@ export async function addHrRecord(formData) {
     validatedData.address,
     validatedData.internship,
     validatedData.comments,
-    session.role === "volunteer" ? session.incharge_email : session.email,
-    session.email,
+    session.role === "volunteer" ? session.incharge_email : formData.incharge_email,
+    session.role === "volunteer" ? session.email : formData.volunteer_email,
   ];
 
   try {
@@ -432,8 +445,8 @@ export async function editHR(id, formData) {
     address = $11,
     internship = $12,
     comments = $13,
-    volunteer_email = COALESCE($14, volunteer_email),
-    incharge_email = COALESCE($15, incharge_email)
+    volunteer_email = $14,
+    incharge_email = $15
   WHERE id = $16
   RETURNING *
 `;
