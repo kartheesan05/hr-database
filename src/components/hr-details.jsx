@@ -108,7 +108,7 @@ export default function HrDetails() {
 
   return (
     <>
-      <div className="min-h-screen w-screen p-4 sm:p-6 md:p-[75px] bg-blue-50 relative">
+      <div className="min-h-screen w-screen p-4 sm:p-6 pt-[75px] md:p-[75px] bg-blue-50 relative">
         <Card className="mb-6  shadow-blue-100 rounded-lg">
           <CardContent className="pt-6 bg-white rounded-lg">
             <SearchForm

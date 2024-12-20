@@ -34,27 +34,27 @@ function Page() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-4 py-8 mt-16">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-800">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 mt-16">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">
             {role === "admin" ? "ED" : "Incharge"} Statistics
           </h1>
           {role === "admin" && (
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={() => setShowEdStats(!showEdStats)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm sm:text-base"
               >
                 Show {showEdStats ? "Admin" : "ED"} Stats
               </button>
               {showEdStats && (
-                <Select 
+                <Select
                   value={inchargeEmail}
                   onValueChange={(value) => {
                     setInchargeEmail(value);
                   }}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full sm:w-[200px]">
                     <SelectValue placeholder="Select ED" />
                   </SelectTrigger>
                   <SelectContent>
@@ -69,16 +69,23 @@ function Page() {
             </div>
           )}
         </div>
-        {(role === "admin") ? (
+        {role === "admin" ? (
           showEdStats ? (
-            inchargeEmail ? <InchargeStats key={inchargeEmail} inchargeEmail={inchargeEmail} /> : <p className="mt-40 text-center text-lg text-red-500">Please select an ED</p>
+            inchargeEmail ? (
+              <InchargeStats
+                key={inchargeEmail}
+                inchargeEmail={inchargeEmail}
+              />
+            ) : (
+              <p className="mt-20 sm:mt-40 text-center text-base sm:text-lg text-red-500">
+                Please select an ED
+              </p>
+            )
           ) : (
             <AdminStats />
           )
         ) : null}
-        {role === "incharge" && (
-          <InchargeStats />
-        )}
+        {role === "incharge" && <InchargeStats />}
       </div>
     </>
   );

@@ -1,4 +1,6 @@
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+
 
 export const metadata = {
   title: "Forese HR Database",
@@ -14,7 +16,10 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
       </head>
       <body className="bg-blue-50">
-        <ProgressBarProvider>{children}</ProgressBarProvider>
+        <ProgressBarProvider>
+          {children}
+          <Toaster richColors theme="light" />
+        </ProgressBarProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { Info, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -71,6 +72,7 @@ export default function HrTable({
             <TableCell>{hr.email}</TableCell>
             <TableCell className="cursor-pointer" onClick={() => {
               navigator.clipboard.writeText(hr.phone_number);
+              toast.info(`Copied ${hr.phone_number} to clipboard`);
             }}>{hr.phone_number}</TableCell>
             <TableCell className="text-center">
               <span

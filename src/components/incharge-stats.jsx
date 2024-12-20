@@ -50,38 +50,6 @@ export default function InchargeStats({ inchargeEmail }) {
   // Calculate status data from member data with proper number conversion
   const statusData = [
     {
-      status: "Email Sent",
-      value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Email Sent"]) || 0),
-        0
-      ),
-      color: "#3b82f6", // Blue
-    },
-    {
-      status: "Not Called",
-      value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Not Called"]) || 0),
-        0
-      ),
-      color: "#f97316", // Orange
-    },
-    {
-      status: "Pending",
-      value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Pending"]) || 0),
-        0
-      ),
-      color: "#fbbf24", // Yellow/Amber
-    },
-    {
-      status: "Accepted",
-      value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Accepted"]) || 0),
-        0
-      ),
-      color: "#22c55e", // Green
-    },
-    {
       status: "Declined",
       value: memberData.reduce(
         (sum, member) => sum + (parseInt(member["Declined"]) || 0),
@@ -97,10 +65,45 @@ export default function InchargeStats({ inchargeEmail }) {
       ),
       color: "#1f2937", // Dark Gray
     },
+    {
+      status: "Accepted",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Accepted"]) || 0),
+        0
+      ),
+      color: "#22c55e", // Green
+    },
+    {
+      status: "Pending",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Pending"]) || 0),
+        0
+      ),
+      color: "#fbbf24", // Yellow/Amber
+    },
+    {
+      status: "Email Sent",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Email Sent"]) || 0),
+        0
+      ),
+      color: "#3b82f6", // Blue
+    },
+    {
+      status: "Not Called",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Not Called"]) || 0),
+        0
+      ),
+      color: "#f97316", // Orange
+    },
   ];
 
   // Calculate total contacts with proper number conversion
-  const totalContacts = statusData.reduce((sum, item) => sum + (parseInt(item.value) || 0), 0);
+  const totalContacts = statusData.reduce(
+    (sum, item) => sum + (parseInt(item.value) || 0),
+    0
+  );
 
   if (isLoading) {
     return (
@@ -111,11 +114,7 @@ export default function InchargeStats({ inchargeEmail }) {
   }
 
   if (error) {
-    return (
-      <div className="text-center py-8 text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="text-center py-8 text-red-500">{error}</div>;
   }
 
   if (memberData.length === 0) {
@@ -141,22 +140,6 @@ export default function InchargeStats({ inchargeEmail }) {
             <CardContent className="flex justify-center">
               <ChartContainer
                 config={{
-                  "Email Sent": {
-                    label: "Email Sent",
-                    color: "#3b82f6",
-                  },
-                  "Not Called": {
-                    label: "Not Called",
-                    color: "#f97316",
-                  },
-                  Pending: {
-                    label: "Pending",
-                    color: "#fbbf24",
-                  },
-                  Accepted: {
-                    label: "Accepted",
-                    color: "#22c55e",
-                  },
                   Declined: {
                     label: "Declined",
                     color: "#ef4444",
@@ -165,8 +148,24 @@ export default function InchargeStats({ inchargeEmail }) {
                     label: "Blacklisted",
                     color: "#1f2937",
                   },
+                  Accepted: {
+                    label: "Accepted",
+                    color: "#22c55e",
+                  },
+                  Pending: {
+                    label: "Pending",
+                    color: "#fbbf24",
+                  },
+                  "Email Sent": {
+                    label: "Email Sent",
+                    color: "#3b82f6",
+                  },
+                  "Not Called": {
+                    label: "Not Called",
+                    color: "#f97316",
+                  },
                 }}
-                className="h-[400px] w-full"
+                className="h-[300px] sm:h-[400px] min-w-[600px]"
               >
                 <BarChart
                   data={memberData}
@@ -188,10 +187,10 @@ export default function InchargeStats({ inchargeEmail }) {
                   />
                   <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                    <ChartLegend
-                      className="absolute right-[110px] top-0 mt-6"
-                      content={<ChartLegendContent />}
-                    />
+                  <ChartLegend
+                    className="absolute right-[110px] top-0 mt-6"
+                    content={<ChartLegendContent />}
+                  />
                   {statusData.map((status, index) => (
                     <Bar
                       key={status.status}
@@ -291,7 +290,9 @@ export default function InchargeStats({ inchargeEmail }) {
           <Card className="max-w-[400px] mx-auto w-full">
             <CardHeader>
               <CardTitle>Contact Distribution by Member</CardTitle>
-              <CardDescription>How contacts are distributed across members</CardDescription>
+              <CardDescription>
+                How contacts are distributed across members
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
               <ChartContainer
@@ -325,19 +326,29 @@ export default function InchargeStats({ inchargeEmail }) {
                     strokeWidth={5}
                   >
                     {memberData.map((_, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={[
-                          "#3b82f6", "#22c55e", "#f97316", "#8b5cf6", 
-                          "#ec4899", "#14b8a6", "#f59e0b", "#6366f1",
-                          "#ef4444", "#84cc16"
-                        ][index % 10]} 
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={
+                          [
+                            "#3b82f6",
+                            "#22c55e",
+                            "#f97316",
+                            "#8b5cf6",
+                            "#ec4899",
+                            "#14b8a6",
+                            "#f59e0b",
+                            "#6366f1",
+                            "#ef4444",
+                            "#84cc16",
+                          ][index % 10]
+                        }
                       />
                     ))}
                     <Label
                       content={({ viewBox }) => {
                         const totalMemberContacts = memberData.reduce(
-                          (sum, member) => sum + (parseInt(member.contacts) || 0),
+                          (sum, member) =>
+                            sum + (parseInt(member.contacts) || 0),
                           0
                         );
                         if (viewBox && "cx" in viewBox && "cy" in viewBox) {
