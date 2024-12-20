@@ -186,17 +186,26 @@ export async function addHrRecord(formData) {
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
-  if(session.role === "incharge" && (!formData.volunteer_email || !formData.volunteer_email.includes('@'))){
-    
+  if (
+    session.role === "incharge" &&
+    (!formData.volunteer_email || !formData.volunteer_email.includes("@"))
+  ) {
     console.log("volunteer_email", formData.volunteer_email);
     return {
       errors: "A valid volunteer email is required",
     };
   }
 
-  if(session.role === "admin" && (!formData.incharge_email || !formData.volunteer_email || !formData.incharge_email.includes('@') || !formData.volunteer_email.includes('@'))){
+  if (
+    session.role === "admin" &&
+    (!formData.incharge_email ||
+      !formData.volunteer_email ||
+      !formData.incharge_email.includes("@") ||
+      !formData.volunteer_email.includes("@"))
+  ) {
     return {
-      errors: "Both incharge and volunteer emails are required and must be valid",
+      errors:
+        "Both incharge and volunteer emails are required and must be valid",
     };
   }
 
@@ -225,7 +234,9 @@ export async function addHrRecord(formData) {
     validatedData.address,
     validatedData.internship,
     validatedData.comments,
-    session.role === "volunteer" ? session.incharge_email : formData.incharge_email,
+    session.role === "volunteer"
+      ? session.incharge_email
+      : formData.incharge_email,
     session.role === "volunteer" ? session.email : formData.volunteer_email,
   ];
 
@@ -234,6 +245,13 @@ export async function addHrRecord(formData) {
     return result.rows[0];
   } catch (error) {
     console.error("Error adding HR record:", error);
+    // Check for unique constraint violation
+    if (error.code === "23505" && error.constraint === "unique_phone_number") {
+      return {
+        errors:
+          "Phone number already exists in the database. Duplicate entries are not allowed.",
+      };
+    }
     return { errors: "Failed to add HR record" };
   }
 }
@@ -477,6 +495,13 @@ export async function editHR(id, formData) {
     return { data: result.rows[0] };
   } catch (error) {
     console.error("Error updating HR record:", error);
+    // Check for unique constraint violation
+    if (error.code === "23505" && error.constraint === "unique_phone_number") {
+      return {
+        errors:
+          "Phone number already exists in the database. Duplicate entries are not allowed.",
+      };
+    }
     return { errors: "Failed to update HR record" };
   }
 }
