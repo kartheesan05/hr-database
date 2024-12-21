@@ -9,17 +9,17 @@ HR contact database software for FORESE to keep track of the status of each HR c
 (1) Clone this repository and install the required dependencies
 
 ```bash
-$ npm install (or)
-$ bun install (recommended)
+npm install (or)
+bun install (recommended)
 ```
 (2) Run the development server
 
 ```bash
-$ npm run dev
+npm run dev
 ```
 
 (3) Build the app for production
 
 ```bash
-$ npm run build
+npm run build
 ```
