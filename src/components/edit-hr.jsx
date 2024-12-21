@@ -63,7 +63,7 @@ function EditHrForm() {
         setIsLoading(true);
         const result = await getHR(id);
         if (result.errors) {
-          setError(result.errors);
+          setErrorState(result.errors);
           return;
         }
         const sanitizedData = Object.fromEntries(
@@ -72,7 +72,8 @@ function EditHrForm() {
         setFormData(sanitizedData);
         setAvailableIncharges(result.incharges || []);
       } catch (error) {
-        setError("Failed to load HR data");
+        console.log("error", error);
+        setErrorState("Failed to load HR data");
       } finally {
         setIsLoading(false);
       }
@@ -142,7 +143,7 @@ function EditHrForm() {
       });
       // router.push("/");
     } catch (error) {
-      setError(
+      setErrorState(
         "An error occurred while updating the HR record. Please try again."
       );
     } finally {

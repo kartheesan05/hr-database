@@ -345,6 +345,7 @@ export async function getHR(id) {
     ]);
 
     if (hrResult.rows.length === 0) {
+      console.log("hr not found");
       return { errors: "HR record not found" };
     }
 
