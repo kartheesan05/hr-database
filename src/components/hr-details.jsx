@@ -119,8 +119,8 @@ export default function HrDetails() {
           </CardContent>
         </Card>
         {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertTitle>Error</AlertTitle>
+          <Alert variant="destructive" className="mb-6 bg-red-50">
+            <AlertTitle>Error fetching HR data</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
