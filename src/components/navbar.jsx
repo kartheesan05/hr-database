@@ -24,6 +24,7 @@ function Navbar() {
   const handleLogout = () => {
     document.cookie =
       "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.clear();
     router.push("/login");
   };
 
@@ -87,49 +88,52 @@ function Navbar() {
               )}
             </svg>
           </button>
-
-          <div className="hidden md:flex gap-6 mx-auto items-center mt-1">
-            <span
-              onClick={() => router.push("/")}
-              className={getLinkStyle("/")}
-            >
-              Home
-            </span>
-            {role === "admin" && (
+          {(role === "admin" ||
+            role === "incharge" ||
+            role === "volunteer") && (
+            <div className="hidden md:flex gap-6 mx-auto items-center mt-1">
               <span
-                onClick={() => router.push("/add-user")}
-                className={getLinkStyle("/add-user")}
+                onClick={() => router.push("/")}
+                className={getLinkStyle("/")}
               >
-                Add User
+                Home
               </span>
-            )}
-            {(role === "admin" || role === "incharge") && (
+              {role === "admin" && (
+                <span
+                  onClick={() => router.push("/add-user")}
+                  className={getLinkStyle("/add-user")}
+                >
+                  Add User
+                </span>
+              )}
+              {(role === "admin" || role === "incharge") && (
+                <span
+                  onClick={() => router.push("/stats")}
+                  className={getLinkStyle("/stats")}
+                >
+                  Stats
+                </span>
+              )}
               <span
-                onClick={() => router.push("/stats")}
-                className={getLinkStyle("/stats")}
+                onClick={() => router.push("/add-hr")}
+                className={getLinkStyle("/add-hr")}
               >
-                Stats
+                Add HR
               </span>
-            )}
-            <span
-              onClick={() => router.push("/add-hr")}
-              className={getLinkStyle("/add-hr")}
-            >
-              Add HR
-            </span>
-            <span
-              onClick={() => router.push("/hr-pitch")}
-              className={getLinkStyle("/hr-pitch")}
-            >
-              HR Pitch
-            </span>
-            <span
-              onClick={() => router.push("/csv-upload")}
-              className={getLinkStyle("/csv-upload")}
-            >
-              CSV Upload
-            </span>
-          </div>
+              <span
+                onClick={() => router.push("/hr-pitch")}
+                className={getLinkStyle("/hr-pitch")}
+              >
+                HR Pitch
+              </span>
+              <span
+                onClick={() => router.push("/csv-upload")}
+                className={getLinkStyle("/csv-upload")}
+              >
+                CSV Upload
+              </span>
+            </div>
+          )}
 
           <div className="hidden md:flex gap-2 absolute right-4">
             <Button
@@ -146,80 +150,92 @@ function Navbar() {
               isMenuOpen ? "flex" : "hidden"
             } md:hidden absolute top-16 left-0 right-0 flex-col bg-white border-b border-gray-200 shadow-sm`}
           >
-            <span
-              onClick={() => {
-                router.push("/");
-                setIsMenuOpen(false);
-              }}
-              className={`p-4 cursor-pointer font-bold ${
-                currentPath === "/" ? "bg-blue-50" : "hover:bg-blue-50"
-              } text-blue-800`}
-            >
-              Home
-            </span>
-            {role === "admin" && (
-              <span
-                onClick={() => {
-                  router.push("/add-user");
-                  setIsMenuOpen(false);
-                }}
-                className={`p-4 cursor-pointer font-bold ${
-                  currentPath === "/add-user"
-                    ? "bg-blue-50"
-                    : "hover:bg-blue-50"
-                } text-blue-800`}
-              >
-                Add User
-              </span>
+            {(role === "admin" ||
+              role === "incharge" ||
+              role === "volunteer") && (
+              <>
+                <span
+                  onClick={() => {
+                    router.push("/");
+                    setIsMenuOpen(false);
+                  }}
+                  className={`p-4 cursor-pointer font-bold ${
+                    currentPath === "/" ? "bg-blue-50" : "hover:bg-blue-50"
+                  } text-blue-800`}
+                >
+                  Home
+                </span>
+                {role === "admin" && (
+                  <span
+                    onClick={() => {
+                      router.push("/add-user");
+                      setIsMenuOpen(false);
+                    }}
+                    className={`p-4 cursor-pointer font-bold ${
+                      currentPath === "/add-user"
+                        ? "bg-blue-50"
+                        : "hover:bg-blue-50"
+                    } text-blue-800`}
+                  >
+                    Add User
+                  </span>
+                )}
+                {(role === "admin" || role === "incharge") && (
+                  <span
+                    onClick={() => {
+                      router.push("/stats");
+                      setIsMenuOpen(false);
+                    }}
+                    className={`p-4 cursor-pointer font-bold ${
+                      currentPath === "/stats"
+                        ? "bg-blue-50"
+                        : "hover:bg-blue-50"
+                    } text-blue-800`}
+                  >
+                    Stats
+                  </span>
+                )}
+                <span
+                  onClick={() => {
+                    router.push("/add-hr");
+                    setIsMenuOpen(false);
+                  }}
+                  className={`p-4 cursor-pointer font-bold ${
+                    currentPath === "/add-hr"
+                      ? "bg-blue-50"
+                      : "hover:bg-blue-50"
+                  } text-blue-800`}
+                >
+                  Add HR
+                </span>
+                <span
+                  onClick={() => {
+                    router.push("/hr-pitch");
+                    setIsMenuOpen(false);
+                  }}
+                  className={`p-4 cursor-pointer font-bold ${
+                    currentPath === "/hr-pitch"
+                      ? "bg-blue-50"
+                      : "hover:bg-blue-50"
+                  } text-blue-800`}
+                >
+                  HR Pitch
+                </span>
+                <span
+                  onClick={() => {
+                    router.push("/csv-upload");
+                    setIsMenuOpen(false);
+                  }}
+                  className={`p-4 cursor-pointer font-bold ${
+                    currentPath === "/csv-upload"
+                      ? "bg-blue-50"
+                      : "hover:bg-blue-50"
+                  } text-blue-800`}
+                >
+                  CSV Upload
+                </span>
+              </>
             )}
-            {(role === "admin" || role === "incharge") && (
-              <span
-                onClick={() => {
-                  router.push("/stats");
-                  setIsMenuOpen(false);
-                }}
-                className={`p-4 cursor-pointer font-bold ${
-                  currentPath === "/stats" ? "bg-blue-50" : "hover:bg-blue-50"
-                } text-blue-800`}
-              >
-                Stats
-              </span>
-            )}
-            <span
-              onClick={() => {
-                router.push("/add-hr");
-                setIsMenuOpen(false);
-              }}
-              className={`p-4 cursor-pointer font-bold ${
-                currentPath === "/add-hr" ? "bg-blue-50" : "hover:bg-blue-50"
-              } text-blue-800`}
-            >
-              Add HR
-            </span>
-            <span
-              onClick={() => {
-                router.push("/hr-pitch");
-                setIsMenuOpen(false);
-              }}
-              className={`p-4 cursor-pointer font-bold ${
-                currentPath === "/hr-pitch" ? "bg-blue-50" : "hover:bg-blue-50"
-              } text-blue-800`}
-            >
-              HR Pitch
-            </span>
-            <span
-              onClick={() => {
-                router.push("/csv-upload");
-                setIsMenuOpen(false);
-              }}
-              className={`p-4 cursor-pointer font-bold ${
-                currentPath === "/csv-upload"
-                  ? "bg-blue-50"
-                  : "hover:bg-blue-50"
-              } text-blue-800`}
-            >
-              CSV Upload
-            </span>
             <Button
               onClick={handleLogout}
               className="m-4 bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"

@@ -9,7 +9,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next-nprogress-bar";
 
-export default function HrDetailsDialog({ isOpen, onOpenChange, selectedHr }) {
+export default function HrDetailsDialog({
+  isOpen,
+  onOpenChange,
+  selectedHr,
+  role,
+}) {
   const router = useRouter();
 
   return (
@@ -49,12 +54,14 @@ export default function HrDetailsDialog({ isOpen, onOpenChange, selectedHr }) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex w-full justify-between">
-          <AlertDialogAction
-            className="bg-green-600 hover:bg-green-700"
-            onClick={() => router.push(`/edit-hr?id=${selectedHr?.id}`)}
-          >
-            Edit
-          </AlertDialogAction>
+          {role !== "global" && (
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => router.push(`/edit-hr?id=${selectedHr?.id}`)}
+            >
+              Edit
+            </AlertDialogAction>
+          )}
           <AlertDialogAction className="bg-blue-800 hover:bg-blue-900">
             Close
           </AlertDialogAction>

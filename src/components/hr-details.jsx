@@ -22,6 +22,7 @@ export default function HrDetails() {
   const [selectedHr, setSelectedHr] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [hrData, setHrData] = useState([]);
+  const [role, setRole] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const recordsPerPage = 100;
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,9 @@ export default function HrDetails() {
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
+
+    setRole(localStorage.getItem("role"));
+    
     return () => {
       // Cleanup function to abort any pending requests when component unmounts
       if (abortControllerRef.current) {
@@ -151,6 +155,7 @@ export default function HrDetails() {
           isOpen={isDialogOpen}
           onOpenChange={setIsDialogOpen}
           selectedHr={selectedHr}
+          role={role}
         />
       </div>
     </>

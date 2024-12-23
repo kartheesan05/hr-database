@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 const protectedRoutes = ["/", "/add-hr", "/edit-hr", "/hr-pitch"];
 const loginRoutes = ["/login"];
+// const openRoutes = ["/welcome"];
 const statsRoutes = ["/stats"];
 const adminRoutes = ["/add-user"];
 
@@ -11,13 +12,14 @@ export default async function middleware(req) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
   const isLoginRoute = loginRoutes.includes(path);
+  // const isOpenRoute = openRoutes.includes(path);
   const isAdminRoute = adminRoutes.includes(path);
   const isStatsRoute = statsRoutes.includes(path);
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
 
   if (isProtectedRoute && !session?.email) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+    return NextResponse.redirect(new URL("/welcome", req.nextUrl));
   }
 
   if (isLoginRoute && session?.email) {
