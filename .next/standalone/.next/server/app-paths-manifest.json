@@ -1,0 +1,12 @@
+{
+  "/add-hr/page": "app/add-hr/page.js",
+  "/add-user/page": "app/add-user/page.js",
+  "/edit-hr/page": "app/edit-hr/page.js",
+  "/login/page": "app/login/page.js",
+  "/hr-pitch/page": "app/hr-pitch/page.js",
+  "/csv-upload/page": "app/csv-upload/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/welcome/page": "app/welcome/page.js",
+  "/page": "app/page.js",
+  "/stats/page": "app/stats/page.js"
+}

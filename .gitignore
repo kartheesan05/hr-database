@@ -9,7 +9,8 @@ node_modules
 .env.production.local
 
 # Next.js build output
-.next
+.next/*
+!.next/standalone
 out
 
 # Logs
