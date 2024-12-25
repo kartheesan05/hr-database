@@ -51,3 +51,4 @@ dist
 
 # Generated database
 generatedb.py
+deploy.sh

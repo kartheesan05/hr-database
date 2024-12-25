@@ -54,7 +54,7 @@ function Page() {
                     setInchargeEmail(value);
                   }}
                 >
-                  <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectTrigger className="w-full sm:w-[200px] bg-white text-black">
                     <SelectValue placeholder="Select ED" />
                   </SelectTrigger>
                   <SelectContent>
