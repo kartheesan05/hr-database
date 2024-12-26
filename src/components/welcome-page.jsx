@@ -52,7 +52,7 @@ function WelcomePage() {
         <p>
           Designed & Developed by{" "}
           <a
-            href="https://tech.forese.in"
+            // href="https://tech.forese.in"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-800 hover:text-blue-600 font-semibold"
