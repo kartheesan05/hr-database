@@ -30,11 +30,11 @@ function Navbar() {
 
   const getLinkStyle = (path) => {
     const baseStyle =
-      "text-blue-800 cursor-pointer font-bold transition-all duration-200 border-b-2";
+      "text-blue-800 cursor-pointer font-bold relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-blue-600";
     return `${baseStyle} ${
       currentPath === path
-        ? "border-blue-600"
-        : "border-transparent hover:border-blue-600 hover:text-blue-600"
+        ? "after:w-full"
+        : "after:w-0 hover:after:w-full after:transition-all after:duration-300 after:ease-in-out hover:text-blue-600"
     }`;
   };
 
