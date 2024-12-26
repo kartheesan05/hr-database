@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="https://cdn.forese.co.in/icon.png" type="image/png" sizes="32x32" />
       </head>
       <body className="bg-blue-50">
         <ProgressBarProvider>

@@ -54,7 +54,7 @@ function Navbar() {
             onClick={() => router.push("/")}
           >
             <img
-              src="/forese-logo.png"
+              src="https://cdn.forese.co.in/forese-logo.png"
               alt="Forese Logo"
               className="h-[6rem] w-auto"
             />
