@@ -18,6 +18,14 @@ import {
 import { addHrRecord } from "@/lib/actions";
 import { HrContactSchema } from "@/lib/definitions";
 
+const availableIncharges = [
+  "arunima@forese.co.in",
+  "jhalak@forese.co.in",
+  "karthik@forese.co.in",
+  "sandhya@forese.co.in",
+  "sanjana@forese.co.in",
+];
+
 export default function AddHr() {
   const [formData, setFormData] = useState({
     hr_name: "",
@@ -75,7 +83,7 @@ export default function AddHr() {
       transport: formData.transport,
       address: formData.address,
       internship: formData.internship,
-      comments: formData.comments
+      comments: formData.comments,
     });
 
     if (!validatedFields.success) {
@@ -87,7 +95,11 @@ export default function AddHr() {
     try {
       console.log(validatedFields.data);
       startTransition(async () => {
-        const result = await addHrRecord({...validatedFields.data, volunteer_email: formData.volunteer_email, incharge_email: formData.incharge_email});
+        const result = await addHrRecord({
+          ...validatedFields.data,
+          volunteer_email: formData.volunteer_email,
+          incharge_email: formData.incharge_email,
+        });
         if (result.errors) {
           setErrorState(result.errors);
           setIsLoading(false);
@@ -221,7 +233,7 @@ export default function AddHr() {
                 />
               </div>
 
-              {(role === 'incharge' || role === 'admin') && (
+              {(role === "incharge" || role === "admin") && (
                 <div>
                   <Label htmlFor="volunteer_email">Member Email</Label>
                   <Input
@@ -248,18 +260,27 @@ export default function AddHr() {
                 />
               </div>
 
-              {role === 'admin' && (
+              {role === "admin" && (
                 <div>
                   <Label htmlFor="incharge_email">Incharge Email</Label>
-                  <Input
-                    id="incharge_email"
-                    name="incharge_email"
-                    type="email"
+                  <Select
                     value={formData.incharge_email}
-                    onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    onValueChange={(value) =>
+                      handleSelectChange("incharge_email", value)
+                    }
                     required
-                  />
+                  >
+                    <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                      <SelectValue placeholder="Select incharge email" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableIncharges.map((email) => (
+                        <SelectItem key={email} value={email}>
+                          {email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
