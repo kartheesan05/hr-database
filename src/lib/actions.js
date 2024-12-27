@@ -28,6 +28,7 @@ export async function login(formData) {
   let role = null;
   let user_name = null;
   let incharge_name = null;
+  let incharge_email = null;
 
   try {
     const user = await getUser(email);
@@ -60,6 +61,7 @@ export async function login(formData) {
     role = user.role;
     user_name = user.name;
   } catch (error) {
+    console.log("error", error);
     return { errors: "servererror" };
   }
   return { role: role, name: user_name, incharge: incharge_name };
