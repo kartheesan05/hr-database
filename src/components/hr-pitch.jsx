@@ -66,66 +66,66 @@ export default function HRPitch() {
           <h2 className="text-4xl font-bold text-blue-900 mb-8">
             Frequently Asked Questions
           </h2>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-[1.3rem] text-blue-900">
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-[1.3rem] font-semibold text-blue-900 mb-2">
                 What makes your HR solutions unique?
-              </AccordionTrigger>
-              <AccordionContent className="text-[1.2rem] text-gray-800">
+              </h3>
+              <p className="text-[1.2rem] text-gray-800">
                 Our solutions combine cutting-edge technology with personalized
                 approaches, ensuring that each client receives a tailored
                 strategy that addresses their specific organizational needs
                 while maintaining scalability and efficiency.
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </div>
 
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-[1.3rem] text-blue-900">
+            <div>
+              <h3 className="text-[1.3rem] font-semibold text-blue-900 mb-2">
                 How long does implementation typically take?
-              </AccordionTrigger>
-              <AccordionContent className="text-[1.2rem] text-gray-800">
+              </h3>
+              <p className="text-[1.2rem] text-gray-800">
                 Implementation timelines vary based on the scope and complexity
                 of the solution, but typically range from 4-12 weeks. We work
                 closely with your team to ensure a smooth transition and minimal
                 disruption to operations.
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </div>
 
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-[1.3rem] text-blue-900">
+            <div>
+              <h3 className="text-[1.3rem] font-semibold text-blue-900 mb-2">
                 What kind of support do you provide post-implementation?
-              </AccordionTrigger>
-              <AccordionContent className="text-[1.2rem] text-gray-800">
+              </h3>
+              <p className="text-[1.2rem] text-gray-800">
                 We provide comprehensive post-implementation support including
                 dedicated account management, regular check-ins, performance
                 monitoring, and ongoing training sessions to ensure maximum
                 value from your investment.
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </div>
 
-            <AccordionItem value="item-4">
-              <AccordionTrigger className="text-[1.3rem] text-blue-900">
+            <div>
+              <h3 className="text-[1.3rem] font-semibold text-blue-900 mb-2">
                 Can you integrate with existing HR systems?
-              </AccordionTrigger>
-              <AccordionContent className="text-[1.2rem] text-gray-800">
+              </h3>
+              <p className="text-[1.2rem] text-gray-800">
                 Yes, our solutions are designed to integrate seamlessly with
                 most major HR management systems and can be customized to work
                 with proprietary systems as needed.
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </div>
 
-            <AccordionItem value="item-5">
-              <AccordionTrigger className="text-[1.3rem] text-blue-900">
+            <div>
+              <h3 className="text-[1.3rem] font-semibold text-blue-900 mb-2">
                 What ROI can we expect from your solutions?
-              </AccordionTrigger>
-              <AccordionContent className="text-[1.2rem] text-gray-800">
+              </h3>
+              <p className="text-[1.2rem] text-gray-800">
                 While specific ROI varies by organization, our clients typically
                 see improvements in employee retention rates, reduced hiring
                 costs, increased productivity, and enhanced employee
                 satisfaction within the first year of implementation.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </p>
+            </div>
+          </div>
         </section>
       </div>
     </div>
