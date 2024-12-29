@@ -31,18 +31,18 @@ export default function LoginPage() {
         setErrorState(result.errors);
         return;
       }
-      localStorage.setItem("role", result.role);
-      localStorage.setItem("name", result.name);
-      localStorage.setItem("incharge", result.incharge);
+      result.role && localStorage.setItem("role", result.role);
+      result.name && localStorage.setItem("name", result.name);
+      result.incharge && localStorage.setItem("incharge", result.incharge);
       router.push("/");
     });
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-50 p-4">
-      <img 
-        src="https://cdn.forese.co.in/login-logo.png" 
-        alt="Forese Logo" 
+      <img
+        src="https://cdn.forese.co.in/login-logo.png"
+        alt="Forese Logo"
         className="w-60 mt-16 mb-8 mr-10"
       />
       <Card className="w-full max-w-md mx-auto">
