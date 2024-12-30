@@ -1,11 +1,11 @@
 "use client";
 
-// import {
-//   Accordion,
-//   AccordionContent,
-//   AccordionItem,
-//   AccordionTrigger,
-// } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useEffect, useState } from "react";
 
 export default function HRPitch() {
@@ -41,6 +41,13 @@ export default function HRPitch() {
               am calling on behalf of Mr. Muralidharan, Chief Placement Officer
               of Sri Venkateswara College of Engineering, Sriperumbudur. Could I
               please borrow 5 minutes of your time?
+            </p>
+
+            <p className="font-semibold">If no</p>
+
+            <p>
+              I am so sorry to disturb you, (Sir/Ma'am). What time is suitable
+              to call you back? (Note down the time){" "}
             </p>
 
             <p className="font-semibold">If yes</p>
@@ -86,6 +93,21 @@ export default function HRPitch() {
                 expertise to help our students prepare for their actual
                 placements.
               </p>
+
+              <p>Do you have any queries for me, (Sir/Ma'am)?</p>
+
+              <p>(Refer FAQS)</p>
+
+              <p>
+                Could I please have your E-Mail ID to send you a formal invite?
+                (Note down the mail ID) We will send you an email regarding the
+                event details shortly.
+              </p>
+
+              <p>
+                Thank you so much for your time and patience. Have a nice day
+                (Sir/Ma'am). (End Call)
+              </p>
             </div>
           </div>
         </section>
@@ -95,16 +117,18 @@ export default function HRPitch() {
           <h2 className="text-4xl font-bold text-blue-900 mb-8">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-8">
+          <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
-              <div key={index} className="space-y-2">
-                <h3 className="text-[1.3rem] font-semibold text-blue-900">
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-[1.3rem] font-semibold text-blue-900 text-left">
                   {index + 1}. {faq.question}
-                </h3>
-                <p className="text-[1.2rem] text-gray-800">{faq.answer}</p>
-              </div>
+                </AccordionTrigger>
+                <AccordionContent className="text-[1.2rem] text-gray-800">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </section>
       </div>
     </div>
