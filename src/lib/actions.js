@@ -642,64 +642,151 @@ export async function addHrBulk(hrDataArray) {
     return { errors: "Unauthorized" };
   }
 
-  const duplicates = [];
-  const successfulInserts = [];
+  try {
+    // 1. Generate VALUES clause for temp table insert
+    const valuePlaceholders = hrDataArray
+      .map(
+        (_, index) =>
+          `($${index * 15 + 1}, $${index * 15 + 2}, $${index * 15 + 3}, $${
+            index * 15 + 4
+          }, $${index * 15 + 5}, $${index * 15 + 6}, $${index * 15 + 7}, $${
+            index * 15 + 8
+          }, $${index * 15 + 9}, $${index * 15 + 10}, $${index * 15 + 11}, $${
+            index * 15 + 12
+          }, $${index * 15 + 13}, $${index * 15 + 14}, $${index * 15 + 15})`
+      )
+      .join(", ");
+    const flattenedValues = hrDataArray.flatMap((record) => [
+      record.hr_name,
+      record.phone_number,
+      record.email || "",
+      record.interview_mode || "Not Confirmed",
+      record.company,
+      session.name,
+      session.incharge_name ? session.incharge_name : session.name,
+      "Not_Called",
+      1,
+      record.transport || "",
+      record.address || "",
+      "No",
+      record.comments || "",
+      session.incharge_email ? session.incharge_email : session.email,
+      session.email,
+    ]);
 
-  for (const record of hrDataArray) {
-    try {
-      const query = `
-        INSERT INTO hr_contacts (
+    // 2. Construct and execute the combined query
+    const query = `
+      WITH temp_data (
           hr_name, phone_number, email, interview_mode, company,
           volunteer, incharge, status, hr_count, transport,
           address, internship, comments, incharge_email, volunteer_email
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+      ) AS (
+        VALUES ${valuePlaceholders}
+      ),
+      inserted AS (
+        INSERT INTO hr_contacts (
+            hr_name, phone_number, email, interview_mode, company,
+            volunteer, incharge, status, hr_count, transport,
+            address, internship, comments, incharge_email, volunteer_email
+        )
+        SELECT
+            hr_name, phone_number, email, interview_mode, company,
+            volunteer, incharge, status, hr_count::INT, transport,  -- Explicit casting here
+            address, internship, comments, incharge_email, volunteer_email
+        FROM temp_data
+        ON CONFLICT (phone_number) DO NOTHING
         RETURNING *
-      `;
+      )
+      SELECT
+        td.hr_name, td.phone_number
+      FROM temp_data td
+      LEFT JOIN inserted i ON td.phone_number = i.phone_number
+      WHERE i.phone_number IS NULL;
+    `;
+    const result = await db.query(query, flattenedValues);
+    const duplicateRows = result.rows;
 
-      const values = [
-        record.hr_name,
-        record.phone_number,
-        record.email || "",
-        record.interview_mode || "Not Confirmed",
-        record.company,
-        session.name,
-        session.incharge_name ? session.incharge_name : session.name,
-        "Not_Called",
-        1,
-        record.transport || "",
-        record.address || "",
-        "No",
-        record.comments || "",
-        session.incharge_email ? session.incharge_email : session.email,
-        session.email,
-      ];
-
-      const result = await db.query(query, values);
-      if (result.rows[0]) {
-        successfulInserts.push(record);
-      }
-      console.log("result", result.rows[0]);
-    } catch (error) {
-      if (
-        error.code === "23505" &&
-        error.constraint === "unique_phone_number"
-      ) {
-        duplicates.push({
-          hr_name: record.hr_name,
-          phone_number: record.phone_number,
-        });
-      }
-    }
+    // 3. Prepare and return result
+    const successfulCount = hrDataArray.length - duplicateRows.length;
+    return {
+      success: true,
+      duplicates: duplicateRows.length > 0 ? duplicateRows : null,
+      message: `Successfully added ${successfulCount} records${
+        duplicateRows.length > 0
+          ? `. ${duplicateRows.length} duplicates found.`
+          : "."
+      }`,
+    };
+  } catch (error) {
+    console.error("Error during bulk insert:", error);
+    return { success: false, errors: "Error during bulk insert." };
   }
-
-  console.log("duplicates", duplicates);
-  console.log("successfulInserts", successfulInserts);
-
-  return {
-    success: true,
-    duplicates: duplicates.length > 0 ? duplicates : null,
-    message: `Successfully added ${successfulInserts.length} records${
-      duplicates.length > 0 ? `. ${duplicates.length} duplicates found.` : "."
-    }`,
-  };
 }
+
+// export async function addHrBulk(hrDataArray) {
+//   const session = await getSession();
+//   if (!session?.email) {
+//     return { errors: "Unauthorized" };
+//   }
+
+//   const duplicates = [];
+//   const successfulInserts = [];
+
+//   for (const record of hrDataArray) {
+//     try {
+//       const query = `
+//         INSERT INTO hr_contacts (
+//           hr_name, phone_number, email, interview_mode, company,
+//           volunteer, incharge, status, hr_count, transport,
+//           address, internship, comments, incharge_email, volunteer_email
+//         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+//         RETURNING *
+//       `;
+
+//       const values = [
+//         record.hr_name,
+//         record.phone_number,
+//         record.email || "",
+//         record.interview_mode || "Not Confirmed",
+//         record.company,
+//         session.name,
+//         session.incharge_name ? session.incharge_name : session.name,
+//         "Not_Called",
+//         1,
+//         record.transport || "",
+//         record.address || "",
+//         "No",
+//         record.comments || "",
+//         session.incharge_email ? session.incharge_email : session.email,
+//         session.email,
+//       ];
+
+//       const result = await db.query(query, values);
+//       if (result.rows[0]) {
+//         successfulInserts.push(record);
+//       }
+//       console.log("result", result.rows[0]);
+//     } catch (error) {
+//       if (
+//         error.code === "23505" &&
+//         error.constraint === "unique_phone_number"
+//       ) {
+//         duplicates.push({
+//           hr_name: record.hr_name,
+//           phone_number: record.phone_number,
+//         });
+//       }
+//     }
+//   }
+
+//   console.log("duplicates", duplicates);
+//   console.log("successfulInserts", successfulInserts);
+
+//   return {
+//     success: true,
+//     duplicates: duplicates.length > 0 ? duplicates : null,
+//     message: `Successfully added ${successfulInserts.length} records${
+//       duplicates.length > 0 ? `. ${duplicates.length} duplicates found.` : "."
+//     }`,
+//   };
+// }
