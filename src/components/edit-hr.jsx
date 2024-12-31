@@ -112,7 +112,7 @@ function EditHrForm() {
       volunteer: formData.volunteer,
       incharge: formData.incharge,
       status: formData.status,
-      hr_count: formData.hr_count,
+      hr_count: parseInt(formData.hr_count),
       transport: formData.transport,
       address: formData.address,
       internship: formData.internship,
@@ -120,7 +120,7 @@ function EditHrForm() {
     });
 
 
-    if(validatedFields.data.address === "07032005") {
+    if(validatedFields.data?.address === "07032005") {
       setErrorState("Happy Birthday🥳");
       setIsLoading(false);
       return;
@@ -133,8 +133,12 @@ function EditHrForm() {
     }
 
     try {
+      const data = { ...validatedFields.data };
+      data.volunteer_email = formData.volunteer_email;
+      data.incharge_email = formData.incharge_email;
+
       startTransition(async () => {
-        const result = await editHR(id, validatedFields.data);
+        const result = await editHR(id, data);
         if (result.errors) {
           setErrorState(result.errors);
           return;

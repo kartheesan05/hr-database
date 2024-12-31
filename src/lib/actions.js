@@ -49,12 +49,15 @@ export async function login(formData) {
       await createSession({
         email: user.email,
         role: user.role,
+        name: user.name,
         incharge_email: incharge.email,
+        incharge_name: incharge.name,
       });
     } else {
       await createSession({
         email: user.email,
         role: user.role,
+        name: user.name,
       });
     }
 
@@ -411,6 +414,7 @@ export async function editHR(id, formData) {
   });
 
   if (!validatedFields.success) {
+    console.log("validatedFields error", validatedFields.error);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
     };
@@ -449,7 +453,6 @@ export async function editHR(id, formData) {
     }
 
     // Admin can edit all records, so no additional check needed for admin role
-
     const query = `
   UPDATE hr_contacts SET
     hr_name = $1,
@@ -485,8 +488,12 @@ export async function editHR(id, formData) {
       validatedData.address,
       validatedData.internship,
       validatedData.comments,
-      formData.volunteer_email,
-      formData.incharge_email,
+      session.role === "volunteer" ? session.email : formData.volunteer_email,
+      session.role === "volunteer"
+        ? session.incharge_email
+        : session.role === "incharge"
+        ? hrRecord.incharge_email
+        : formData.incharge_email,
       id,
     ];
 
@@ -629,284 +636,70 @@ export async function getAdminStats() {
   }
 }
 
-// export async function addHrBulk(hrDataArray) {
-//   const session = await getSession();
-//   if (!session?.email) {
-//     return { errors: "Unauthorized" };
-//   }
-
-//   // Validate each record
-//   const validatedRecords = [];
-//   const errors = [];
-
-//   for (let i = 0; i < hrDataArray.length; i++) {
-//     const record = hrDataArray[i];
-//     const validatedFields = HrContactSchema.safeParse({
-//       hr_name: record.hr_name,
-//       phone_number: record.phone_number,
-//       email: record.email,
-//       interview_mode: record.interview_mode,
-//       company: record.company,
-//       volunteer: record.volunteer,
-//       incharge: record.incharge,
-//       status: record.status,
-//       hr_count: record.hr_count ? parseInt(record.hr_count) : 1,
-//       transport: record.transport,
-//       address: record.address,
-//       internship: record.internship || "No",
-//       comments: record.comments,
-//     });
-
-//     if (!validatedFields.success) {
-//       errors.push({
-//         index: i,
-//         record: record,
-//         errors: validatedFields.error.flatten().fieldErrors,
-//       });
-//       continue;
-//     }
-
-//     // Add email validation based on role
-//     if (
-//       session.role === "incharge" &&
-//       (!record.volunteer_email || !record.volunteer_email.includes("@"))
-//     ) {
-//       errors.push({
-//         index: i,
-//         record: record,
-//         errors: "A valid volunteer email is required",
-//       });
-//       continue;
-//     }
-
-//     if (
-//       session.role === "admin" &&
-//       (!record.incharge_email ||
-//         !record.volunteer_email ||
-//         !record.incharge_email.includes("@") ||
-//         !record.volunteer_email.includes("@"))
-//     ) {
-//       errors.push({
-//         index: i,
-//         record: record,
-//         errors:
-//           "Both incharge and volunteer emails are required and must be valid",
-//       });
-//       continue;
-//     }
-
-//     validatedRecords.push({
-//       ...validatedFields.data,
-//       incharge_email:
-//         session.role === "volunteer"
-//           ? session.incharge_email
-//           : record.incharge_email,
-//       volunteer_email:
-//         session.role === "volunteer" ? session.email : record.volunteer_email,
-//     });
-//   }
-
-//   if (errors.length > 0) {
-//     return { errors: errors };
-//   }
-
-//   // Prepare bulk insert query
-//   const query = `
-//     INSERT INTO hr_contacts (
-//       hr_name, phone_number, email, interview_mode, company,
-//       volunteer, incharge, status, hr_count, transport,
-//       address, internship, comments, incharge_email, volunteer_email
-//     ) 
-//     SELECT * FROM UNNEST (
-//       $1::text[], $2::text[], $3::text[], $4::text[], $5::text[],
-//       $6::text[], $7::text[], $8::text[], $9::integer[], $10::text[],
-//       $11::text[], $12::text[], $13::text[], $14::text[], $15::text[]
-//     )
-//   `;
-
-//   try {
-//     // Transform records into column arrays
-//     const values = [
-//       validatedRecords.map((r) => r.hr_name),
-//       validatedRecords.map((r) => r.phone_number),
-//       validatedRecords.map((r) => r.email),
-//       validatedRecords.map((r) => r.interview_mode),
-//       validatedRecords.map((r) => r.company),
-//       validatedRecords.map((r) => r.volunteer),
-//       validatedRecords.map((r) => r.incharge),
-//       validatedRecords.map((r) => r.status),
-//       validatedRecords.map((r) => r.hr_count),
-//       validatedRecords.map((r) => r.transport),
-//       validatedRecords.map((r) => r.address),
-//       validatedRecords.map((r) => r.internship),
-//       validatedRecords.map((r) => r.comments),
-//       validatedRecords.map((r) => r.incharge_email),
-//       validatedRecords.map((r) => r.volunteer_email),
-//     ];
-
-//     await db.query(query, values);
-//     return {
-//       success: true,
-//       message: `Successfully inserted ${validatedRecords.length} records`,
-//     };
-//   } catch (error) {
-//     console.error("Error adding bulk HR records:", error);
-//     if (error.code === "23505" && error.constraint === "unique_phone_number") {
-//       return {
-//         errors:
-//           "One or more phone numbers already exist in the database. Duplicate entries are not allowed.",
-//       };
-//     }
-//     return { errors: "Failed to add HR records" };
-//   }
-// }
-
-
 export async function addHrBulk(hrDataArray) {
   const session = await getSession();
   if (!session?.email) {
     return { errors: "Unauthorized" };
   }
 
-  // Validate each record
-  const validatedRecords = [];
-  const validationErrors = [];
+  const duplicates = [];
+  const successfulInserts = [];
 
-  for (let i = 0; i < hrDataArray.length; i++) {
-    const record = hrDataArray[i];
-    const validatedFields = HrContactSchema.safeParse({
-      hr_name: record.hr_name,
-      phone_number: record.phone_number,
-      email: record.email,
-      interview_mode: record.interview_mode,
-      company: record.company,
-      volunteer: record.volunteer,
-      incharge: record.incharge,
-      status: record.status,
-      hr_count: record.hr_count ? parseInt(record.hr_count) : 1,
-      transport: record.transport,
-      address: record.address,
-      internship: record.internship || "No",
-      comments: record.comments,
-    });
-
-    if (!validatedFields.success) {
-      validationErrors.push({
-        index: i,
-        record: record,
-        errors: validatedFields.error.flatten().fieldErrors,
-      });
-      continue;
-    }
-
-    // Add email validation based on role
-    if (
-      session.role === "incharge" &&
-      (!record.volunteer_email || !record.volunteer_email.includes("@"))
-    ) {
-      validationErrors.push({
-        index: i,
-        record: record,
-        errors: "A valid volunteer email is required",
-      });
-      continue;
-    }
-
-    if (
-      session.role === "admin" &&
-      (!record.incharge_email ||
-        !record.volunteer_email ||
-        !record.incharge_email.includes("@") ||
-        !record.volunteer_email.includes("@"))
-    ) {
-      validationErrors.push({
-        index: i,
-        record: record,
-        errors:
-          "Both incharge and volunteer emails are required and must be valid",
-      });
-      continue;
-    }
-
-    validatedRecords.push({
-      ...validatedFields.data,
-      incharge_email:
-        session.role === "volunteer"
-          ? session.incharge_email
-          : record.incharge_email,
-      volunteer_email:
-        session.role === "volunteer" ? session.email : record.volunteer_email,
-    });
-  }
-
-  if (validationErrors.length === hrDataArray.length) {
-    return { errors: validationErrors };
-  }
-
-  // Insert records one by one to handle duplicates
-  const results = {
-    success: [],
-    duplicates: [],
-    errors: validationErrors,
-  };
-
-  for (const record of validatedRecords) {
-    const query = `
-      INSERT INTO hr_contacts (
-        hr_name, phone_number, email, interview_mode, company,
-        volunteer, incharge, status, hr_count, transport,
-        address, internship, comments, incharge_email, volunteer_email
-      ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-      ON CONFLICT ON CONSTRAINT unique_phone_number DO NOTHING
-      RETURNING *;
-    `;
-
-    const values = [
-      record.hr_name,
-      record.phone_number,
-      record.email,
-      record.interview_mode,
-      record.company,
-      record.volunteer,
-      record.incharge,
-      record.status,
-      record.hr_count,
-      record.transport,
-      record.address,
-      record.internship,
-      record.comments,
-      record.incharge_email,
-      record.volunteer_email,
-    ];
-
+  for (const record of hrDataArray) {
     try {
+      const query = `
+        INSERT INTO hr_contacts (
+          hr_name, phone_number, email, interview_mode, company,
+          volunteer, incharge, status, hr_count, transport,
+          address, internship, comments, incharge_email, volunteer_email
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        RETURNING *
+      `;
+
+      const values = [
+        record.hr_name,
+        record.phone_number,
+        record.email || "",
+        record.interview_mode || "Not Confirmed",
+        record.company,
+        session.name,
+        session.incharge_name ? session.incharge_name : session.name,
+        "Not_Called",
+        1,
+        record.transport || "",
+        record.address || "",
+        "No",
+        record.comments || "",
+        session.incharge_email ? session.incharge_email : session.email,
+        session.email,
+      ];
+
       const result = await db.query(query, values);
-      if (result.rows.length === 0) {
-        // This means the record was skipped due to duplicate phone number
-        results.duplicates.push({
-          phone_number: record.phone_number,
-          hr_name: record.hr_name,
-        });
-      } else {
-        results.success.push(result.rows[0]);
+      if (result.rows[0]) {
+        successfulInserts.push(record);
       }
+      console.log("result", result.rows[0]);
     } catch (error) {
-      console.error("Error adding HR record:", error);
-      results.errors.push({
-        record: record,
-        error: "Database error while inserting record",
-      });
+      if (
+        error.code === "23505" &&
+        error.constraint === "unique_phone_number"
+      ) {
+        duplicates.push({
+          hr_name: record.hr_name,
+          phone_number: record.phone_number,
+        });
+      }
     }
   }
+
+  console.log("duplicates", duplicates);
+  console.log("successfulInserts", successfulInserts);
 
   return {
     success: true,
-    message: `Successfully inserted ${results.success.length} records`,
-    results: {
-      successful: results.success.length,
-      duplicates: results.duplicates,
-      errors: results.errors,
-    },
+    duplicates: duplicates.length > 0 ? duplicates : null,
+    message: `Successfully added ${successfulInserts.length} records${
+      duplicates.length > 0 ? `. ${duplicates.length} duplicates found.` : "."
+    }`,
   };
 }

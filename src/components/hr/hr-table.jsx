@@ -69,7 +69,12 @@ export default function HrTable({
             <TableCell>{hr.volunteer}</TableCell>
             <TableCell>{hr.incharge}</TableCell>
             <TableCell>{hr.company}</TableCell>
-            <TableCell>{hr.email}</TableCell>
+            <TableCell className={hr.email ? "cursor-pointer" : null} onClick={() => {
+              if (hr.email) {
+                navigator.clipboard.writeText(hr.email);
+                toast.info(`Copied ${hr.email} to clipboard`);
+              }
+            }}>{hr.email}</TableCell>
             <TableCell className="cursor-pointer" onClick={() => {
               navigator.clipboard.writeText(hr.phone_number);
               toast.info(`Copied ${hr.phone_number} to clipboard`);

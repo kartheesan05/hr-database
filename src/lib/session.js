@@ -23,11 +23,17 @@ export async function decrypt(session) {
   }
 }
 
-export async function createSession({ email, role, incharge_email }) {
+export async function createSession({ email, role, incharge_email, name, incharge_name }) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const sessionData = { email, role, expiresAt };
   if (incharge_email) {
     sessionData.incharge_email = incharge_email;
+  }
+  if (name) {
+    sessionData.name = name;
+  }
+  if (incharge_name) {
+    sessionData.incharge_name = incharge_name;
   }
   const session = await encrypt(sessionData);
 
