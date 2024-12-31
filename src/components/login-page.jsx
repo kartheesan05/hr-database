@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/actions";
 import { useRouter } from "next-nprogress-bar";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,6 +35,7 @@ export default function LoginPage() {
       result.role && localStorage.setItem("role", result.role);
       result.name && localStorage.setItem("name", result.name);
       result.incharge && localStorage.setItem("incharge", result.incharge);
+      toast.success(`Login successful, ${result.name}!`);
       router.push("/");
     });
   };
