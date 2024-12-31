@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { toast } from "sonner";
 
 function Navbar() {
   const router = useRouter();
@@ -25,6 +25,7 @@ function Navbar() {
     document.cookie =
       "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     localStorage.clear();
+    toast.error("Logged out :(");
     router.push("/login");
   };
 
