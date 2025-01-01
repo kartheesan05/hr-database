@@ -43,9 +43,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-blue-50 p-4">
-      <div className="w-60 mt-16 mb-8 mr-10">
+      <div className="w-60 mt-16 mb-8 mr-10 min-h-36">
         <img
-          src="https://cdn.forese.co.in/login-logo.png"
+          src="/login-logo-small.png"
           alt="Forese Logo"
         />
       </div>
