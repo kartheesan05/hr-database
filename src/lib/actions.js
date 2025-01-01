@@ -691,14 +691,14 @@ export async function addHrBulk(hrDataArray) {
         )
         SELECT
             hr_name, phone_number, email, interview_mode, company,
-            volunteer, incharge, status, hr_count::INT, transport,  -- Explicit casting here
+            volunteer, incharge, status, hr_count::INT, transport,
             address, internship, comments, incharge_email, volunteer_email
         FROM temp_data
         ON CONFLICT (phone_number) DO NOTHING
         RETURNING *
       )
       SELECT
-        td.hr_name, td.phone_number
+        td.hr_name, td.phone_number, td.email, td.company
       FROM temp_data td
       LEFT JOIN inserted i ON td.phone_number = i.phone_number
       WHERE i.phone_number IS NULL;
@@ -710,6 +710,7 @@ export async function addHrBulk(hrDataArray) {
     const successfulCount = hrDataArray.length - duplicateRows.length;
     return {
       success: true,
+      successfulCount: successfulCount,
       duplicates: duplicateRows.length > 0 ? duplicateRows : null,
       message: `Successfully added ${successfulCount} records${
         duplicateRows.length > 0

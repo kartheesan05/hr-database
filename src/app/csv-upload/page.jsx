@@ -1,11 +1,13 @@
-import Navbar from '@/components/navbar'
+import Navbar from "@/components/navbar";
+import CsvUpload from "@/components/csv-upload";
 
 function Page() {
   return (
     <>
       <Navbar />
-      <div className="flex justify-center items-center h-screen pt-20">
-        <p>Building this page...</p>
+      <div className="flex justify-center items-center min-h-screen py-20">
+        {/* <p>Building this page...</p> */}
+        <CsvUpload />
       </div>
     </>
   )
