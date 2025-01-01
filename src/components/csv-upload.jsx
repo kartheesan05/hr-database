@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Papa from "papaparse";
 import { addHrBulk } from "@/lib/actions";
+import { toast } from "sonner";
 
 const fileInputStyles = {
   container: "flex flex-col items-center justify-center space-y-4 h-full",
@@ -168,6 +169,7 @@ function CsvUpload() {
     link.href = URL.createObjectURL(blob);
     link.download = "hr_contacts_template.csv";
     link.click();
+    toast.success("CSV template downloaded successfully");
   };
 
   const downloadDuplicates = (duplicates) => {
@@ -181,6 +183,7 @@ function CsvUpload() {
     link.href = URL.createObjectURL(blob);
     link.download = "hr_contacts_duplicates.csv";
     link.click();
+    toast.success("Duplicates downloaded successfully");
   };
 
   const clearFile = () => {

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { getHR, editHR, deleteHR } from "@/lib/actions";
 import { HrContactSchema } from "@/lib/definitions";
+import { toast } from "sonner";
 
 export default function EditHr() {
   return (
@@ -173,6 +174,7 @@ function EditHrForm() {
           setErrorState(result.errors);
           return;
         }
+        toast.warning("HR record deleted successfully");
         router.push("/");
       });
     } catch (error) {

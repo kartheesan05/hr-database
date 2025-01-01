@@ -54,11 +54,13 @@ function Navbar() {
             className="absolute left-4 flex items-center gap-2 cursor-pointer"
             onClick={() => router.push("/")}
           >
-            <img
-              src="/forese-logo-small.png"
-              alt="Forese Logo"
-              className="h-[6rem] w-auto"
-            />
+            <div className="h-[6rem] w-[6rem]">
+              <img
+                src="/forese-logo-small.png"
+                alt="Forese Logo"
+                className="h-[6rem] w-auto"
+              />
+            </div>
             <h1 className="text-blue-800 text-2xl font-bold">HR Database</h1>
           </div>
 
