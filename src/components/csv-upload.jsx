@@ -194,8 +194,8 @@ function CsvUpload() {
 
   return (
     <>
-      <Card className=" shadow-blue-100 rounded-xl max-w-[26.5rem] mx-auto w-full">
-        <CardHeader className="bg-blue-100 rounded-t-xl">
+      <Card className=" shadow-blue-100 rounded-xl max-w-[26.5rem] mx-auto w-full overflow-hidden">
+        <CardHeader className="bg-blue-100 rounded-t-lg">
           <CardTitle className="text-blue-800 text-center text-3xl font-bold">
             Upload HR Records
           </CardTitle>
