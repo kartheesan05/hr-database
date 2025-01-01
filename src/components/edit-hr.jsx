@@ -19,6 +19,16 @@ import {
 import { getHR, editHR, deleteHR } from "@/lib/actions";
 import { HrContactSchema } from "@/lib/definitions";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function EditHr() {
   return (
@@ -55,6 +65,7 @@ function EditHrForm() {
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [availableIncharges, setAvailableIncharges] = useState([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     const fetchHrData = async () => {
@@ -156,14 +167,6 @@ function EditHrForm() {
   };
 
   const handleDelete = async () => {
-    if (
-      !window?.confirm(
-        "Are you sure you want to delete this HR record? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
     setIsLoading(true);
     setErrorState(null);
 
@@ -442,7 +445,7 @@ function EditHrForm() {
             Back to HR Database
           </Button>
           <Button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteDialog(true)}
             className="bg-red-600 hover:bg-red-700 text-white"
             disabled={isLoading || isPending}
           >
@@ -450,6 +453,26 @@ function EditHrForm() {
           </Button>
         </div>
       </div>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the HR
+              record.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
