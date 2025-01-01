@@ -119,8 +119,7 @@ function EditHrForm() {
       comments: formData.comments,
     });
 
-
-    if(validatedFields.data?.address === "07032005") {
+    if (validatedFields.data?.address === "07032005") {
       setErrorState("Happy Birthday🥳");
       setIsLoading(false);
       return;
@@ -240,7 +239,9 @@ function EditHrForm() {
                       <SelectValue placeholder="Interview Mode" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Not Confirmed">Not Confirmed</SelectItem>
+                      <SelectItem value="Not Confirmed">
+                        Not Confirmed
+                      </SelectItem>
                       <SelectItem value="Online">Online</SelectItem>
                       <SelectItem value="In-person">In-person</SelectItem>
                       <SelectItem value="Both">Both</SelectItem>
@@ -296,6 +297,13 @@ function EditHrForm() {
                       <SelectItem value="Email_Sent">Email Sent</SelectItem>
                       <SelectItem value="Not_Called">Not Called</SelectItem>
                       <SelectItem value="Blacklisted">Blacklisted</SelectItem>
+                      <SelectItem value="Not_Reachable">
+                        Not Reachable
+                      </SelectItem>
+                      <SelectItem value="Wrong_Number">Wrong Number</SelectItem>
+                      <SelectItem value="Called_Postponed">
+                        Called Postponed
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

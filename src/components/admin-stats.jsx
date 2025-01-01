@@ -87,6 +87,30 @@ export default function AdminStats() {
       color: "#3b82f6", // Blue
     },
     {
+      status: "Called Postponed",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Called Postponed"]) || 0),
+        0
+      ),
+      color: "#14b8a6", // Teal
+    },
+    {
+      status: "Wrong Number",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Wrong Number"]) || 0),
+        0
+      ),
+      color: "#ec4899", // Pink
+    },
+    {
+      status: "Not Reachable",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Not Reachable"]) || 0),
+        0
+      ),
+      color: "#9333ea", // Purple
+    },
+    {
       status: "Not Called",
       value: memberData.reduce(
         (sum, member) => sum + (parseInt(member["Not Called"]) || 0),
@@ -158,6 +182,18 @@ export default function AdminStats() {
                   "Email Sent": {
                     label: "Email Sent",
                     color: "#3b82f6",
+                  },
+                  "Called Postponed": {
+                    label: "Called Postponed",
+                    color: "#14b8a6",
+                  },
+                  "Wrong Number": {
+                    label: "Wrong Number",
+                    color: "#ec4899",
+                  },
+                  "Not Reachable": {
+                    label: "Not Reachable",
+                    color: "#9333ea",
                   },
                   "Not Called": {
                     label: "Not Called",
@@ -272,16 +308,16 @@ export default function AdminStats() {
                 </ChartContainer>
 
                 {/* Legend */}
-                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-[400px]">
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-[500px]">
                   {statusData.map((item, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <div
                         className="h-3 w-3 rounded-full flex-shrink-0"
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="text-sm text-neutral-500 dark:text-neutral-400 truncate">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         {item.status} ({item.value})
-                      </span>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -13,12 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function HrTable({ 
-  hrData, 
-  isLoading, 
-  currentPage, 
-  recordsPerPage, 
-  showDetails 
+export default function HrTable({
+  hrData,
+  isLoading,
+  currentPage,
+  recordsPerPage,
+  showDetails,
 }) {
   if (isLoading) {
     return (
@@ -30,9 +30,7 @@ export default function HrTable({
 
   if (hrData.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No results found.
-      </div>
+      <div className="text-center py-8 text-gray-500">No results found.</div>
     );
   }
 
@@ -47,7 +45,9 @@ export default function HrTable({
           <TableHead className="text-blue-800">Company</TableHead>
           <TableHead className="text-blue-800">Email</TableHead>
           <TableHead className="text-blue-800">Number</TableHead>
-          <TableHead className="text-blue-800 w-[150px] text-center">Status</TableHead>
+          <TableHead className="text-blue-800 w-[150px] text-center">
+            Status
+          </TableHead>
           <TableHead className="text-blue-800">Interview Mode</TableHead>
           <TableHead className="text-blue-800">HR Count</TableHead>
           <TableHead className="text-blue-800">Show Details</TableHead>
@@ -69,16 +69,26 @@ export default function HrTable({
             <TableCell>{hr.volunteer}</TableCell>
             <TableCell>{hr.incharge}</TableCell>
             <TableCell>{hr.company}</TableCell>
-            <TableCell className={hr.email ? "cursor-pointer" : null} onClick={() => {
-              if (hr.email) {
-                navigator.clipboard.writeText(hr.email);
-                toast.info(`Copied ${hr.email} to clipboard`);
-              }
-            }}>{hr.email}</TableCell>
-            <TableCell className="cursor-pointer" onClick={() => {
-              navigator.clipboard.writeText(hr.phone_number);
-              toast.info(`Copied ${hr.phone_number} to clipboard`);
-            }}>{hr.phone_number}</TableCell>
+            <TableCell
+              className={hr.email ? "cursor-pointer" : null}
+              onClick={() => {
+                if (hr.email) {
+                  navigator.clipboard.writeText(hr.email);
+                  toast.info(`Copied ${hr.email} to clipboard`);
+                }
+              }}
+            >
+              {hr.email}
+            </TableCell>
+            <TableCell
+              className="cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(hr.phone_number);
+                toast.info(`Copied ${hr.phone_number} to clipboard`);
+              }}
+            >
+              {hr.phone_number}
+            </TableCell>
             <TableCell className="text-center">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold inline-block ${
@@ -92,6 +102,12 @@ export default function HrTable({
                     ? "bg-orange-100 text-orange-800"
                     : hr.status === "Blacklisted"
                     ? "bg-gray-900 text-white"
+                    : hr.status === "Not_Reachable"
+                    ? "bg-purple-100 text-purple-800"
+                    : hr.status === "Wrong_Number"
+                    ? "bg-lime-100 text-lime-900"
+                    : hr.status === "Called_Postponed"
+                    ? "bg-yellow-200 text-yellow-900"
                     : "bg-yellow-100 text-yellow-800"
                 }`}
               >
@@ -105,6 +121,12 @@ export default function HrTable({
                   ? "Not Called"
                   : hr.status === "Blacklisted"
                   ? "Blacklisted"
+                  : hr.status === "Not_Reachable"
+                  ? "Not Reachable"
+                  : hr.status === "Wrong_Number"
+                  ? "Wrong Number"
+                  : hr.status === "Called_Postponed"
+                  ? "Called Postponed"
                   : "Pending"}
               </span>
             </TableCell>

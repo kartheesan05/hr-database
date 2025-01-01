@@ -120,6 +120,9 @@ export default function SearchForm({
             <SelectItem value="Pending">Pending</SelectItem>
             <SelectItem value="Inactive">Declined</SelectItem>
             <SelectItem value="Blacklisted">Blacklisted</SelectItem>
+            <SelectItem value="Not_Reachable">Not Reachable</SelectItem>
+            <SelectItem value="Wrong_Number">Wrong Number</SelectItem>
+            <SelectItem value="Called_Postponed">Called Postponed</SelectItem>
           </SelectContent>
         </Select>
       </div>

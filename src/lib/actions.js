@@ -581,6 +581,9 @@ export async function getInchargeStats(inchargeEmail) {
       COUNT(CASE WHEN h.status = 'Pending' THEN 1 END) as "Pending",
       COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
       COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
+      COUNT(CASE WHEN h.status = 'Not_Reachable' THEN 1 END) as "Not Reachable",
+      COUNT(CASE WHEN h.status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
+      COUNT(CASE WHEN h.status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
       COUNT(*) as contacts
     FROM users u
     LEFT JOIN hr_contacts h ON u.email = h.volunteer_email
@@ -619,6 +622,9 @@ export async function getAdminStats() {
       COUNT(CASE WHEN h.status = 'Pending' THEN 1 END) as "Pending",
       COUNT(CASE WHEN h.status = 'Inactive' THEN 1 END) as "Declined",
       COUNT(CASE WHEN h.status = 'Blacklisted' THEN 1 END) as "Blacklisted",
+      COUNT(CASE WHEN h.status = 'Not_Reachable' THEN 1 END) as "Not Reachable",
+      COUNT(CASE WHEN h.status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
+      COUNT(CASE WHEN h.status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
       COUNT(*) as contacts
     FROM users u
     LEFT JOIN hr_contacts h ON u.email = h.incharge_email

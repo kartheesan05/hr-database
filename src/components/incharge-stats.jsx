@@ -90,6 +90,30 @@ export default function InchargeStats({ inchargeEmail }) {
       color: "#3b82f6", // Blue
     },
     {
+      status: "Called Postponed",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Called Postponed"]) || 0),
+        0
+      ),
+      color: "#14b8a6", // Teal
+    },
+    {
+      status: "Wrong Number",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Wrong Number"]) || 0),
+        0
+      ),
+      color: "#ec4899", // Pink
+    },
+    {
+      status: "Not Reachable",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Not Reachable"]) || 0),
+        0
+      ),
+      color: "#9333ea", // Purple
+    },
+    {
       status: "Not Called",
       value: memberData.reduce(
         (sum, member) => sum + (parseInt(member["Not Called"]) || 0),
@@ -160,6 +184,18 @@ export default function InchargeStats({ inchargeEmail }) {
                     label: "Email Sent",
                     color: "#3b82f6",
                   },
+                  "Called Postponed": {
+                    label: "Called Postponed",
+                    color: "#14b8a6",
+                  },
+                  "Wrong Number": {
+                    label: "Wrong Number",
+                    color: "#ec4899",
+                  },
+                  "Not Reachable": {
+                    label: "Not Reachable",
+                    color: "#9333ea",
+                  },
                   "Not Called": {
                     label: "Not Called",
                     color: "#f97316",
@@ -187,10 +223,6 @@ export default function InchargeStats({ inchargeEmail }) {
                   />
                   <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend
-                    className="absolute right-[110px] top-0 mt-6"
-                    content={<ChartLegendContent />}
-                  />
                   {statusData.map((status, index) => (
                     <Bar
                       key={status.status}
@@ -199,10 +231,10 @@ export default function InchargeStats({ inchargeEmail }) {
                       fill={status.color}
                       radius={
                         index === 0
-                          ? [0, 0, 4, 4] // bottom segment
+                          ? [0, 0, 4, 4]
                           : index === statusData.length - 1
-                          ? [4, 4, 0, 0] // top segment
-                          : 0 // middle segments
+                          ? [4, 4, 0, 0]
+                          : 0
                       }
                     />
                   ))}
@@ -304,7 +336,6 @@ export default function InchargeStats({ inchargeEmail }) {
                     data={memberData.map((member, index) => ({
                       name: member.name,
                       value: parseInt(member.contacts) || 0,
-                      // Using a more pleasing color palette
                       color: [
                         "#3b82f6", // Blue
                         "#22c55e", // Green
@@ -316,7 +347,17 @@ export default function InchargeStats({ inchargeEmail }) {
                         "#6366f1", // Indigo
                         "#ef4444", // Red
                         "#84cc16", // Lime
-                      ][index % 10],
+                        "#06b6d4", // Cyan
+                        "#d946ef", // Fuchsia
+                        "#0ea5e9", // Sky
+                        "#64748b", // Slate
+                        "#a855f7", // Purple
+                        "#f43f5e", // Rose
+                        "#0891b2", // Cyan Dark
+                        "#059669", // Emerald
+                        "#7c3aed", // Violet
+                        "#ea580c", // Orange Dark
+                      ][index % 20],
                     }))}
                     dataKey="value"
                     nameKey="name"
@@ -330,17 +371,27 @@ export default function InchargeStats({ inchargeEmail }) {
                         key={`cell-${index}`}
                         fill={
                           [
-                            "#3b82f6",
-                            "#22c55e",
-                            "#f97316",
-                            "#8b5cf6",
-                            "#ec4899",
-                            "#14b8a6",
-                            "#f59e0b",
-                            "#6366f1",
-                            "#ef4444",
-                            "#84cc16",
-                          ][index % 10]
+                            "#3b82f6", // Blue
+                            "#22c55e", // Green
+                            "#f97316", // Orange
+                            "#8b5cf6", // Purple
+                            "#ec4899", // Pink
+                            "#14b8a6", // Teal
+                            "#f59e0b", // Amber
+                            "#6366f1", // Indigo
+                            "#ef4444", // Red
+                            "#84cc16", // Lime
+                            "#06b6d4", // Cyan
+                            "#d946ef", // Fuchsia
+                            "#0ea5e9", // Sky
+                            "#64748b", // Slate
+                            "#a855f7", // Purple
+                            "#f43f5e", // Rose
+                            "#0891b2", // Cyan Dark
+                            "#059669", // Emerald
+                            "#7c3aed", // Violet
+                            "#ea580c", // Orange Dark
+                          ][index % 20]
                         }
                       />
                     ))}
@@ -364,7 +415,7 @@ export default function InchargeStats({ inchargeEmail }) {
                                 y={viewBox.cy}
                                 className="fill-foreground text-3xl font-bold"
                               >
-                                {totalMemberContacts}
+                                {totalContacts}
                               </tspan>
                               <tspan
                                 x={viewBox.cx}
@@ -382,6 +433,44 @@ export default function InchargeStats({ inchargeEmail }) {
                   <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                 </PieChart>
               </ChartContainer>
+
+              {/* Legend */}
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                {memberData.map((member, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{
+                        backgroundColor: [
+                          "#3b82f6", // Blue
+                          "#22c55e", // Green
+                          "#f97316", // Orange
+                          "#8b5cf6", // Purple
+                          "#ec4899", // Pink
+                          "#14b8a6", // Teal
+                          "#f59e0b", // Amber
+                          "#6366f1", // Indigo
+                          "#ef4444", // Red
+                          "#84cc16", // Lime
+                          "#06b6d4", // Cyan
+                          "#d946ef", // Fuchsia
+                          "#0ea5e9", // Sky
+                          "#64748b", // Slate
+                          "#a855f7", // Purple
+                          "#f43f5e", // Rose
+                          "#0891b2", // Cyan Dark
+                          "#059669", // Emerald
+                          "#7c3aed", // Violet
+                          "#ea580c", // Orange Dark
+                        ][index % 20],
+                      }}
+                    />
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                      {member.name} ({member.contacts})
+                    </span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>

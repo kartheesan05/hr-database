@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/navbar";
 import InchargeStats from "@/components/incharge-stats";
+import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin-stats";
 import { useEffect, useState } from "react";
 import {
@@ -41,12 +42,12 @@ function Page() {
           </h1>
           {role === "admin" && (
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <button
+              <Button
                 onClick={() => setShowEdStats(!showEdStats)}
-                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm sm:text-base"
+                className="bg-blue-800 hover:bg-blue-900"
               >
                 Show {showEdStats ? "Admin" : "ED"} Stats
-              </button>
+              </Button>
               {showEdStats && (
                 <Select
                   value={inchargeEmail}

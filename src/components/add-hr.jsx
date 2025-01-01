@@ -300,6 +300,11 @@ export default function AddHr() {
                     <SelectItem value="Email_Sent">Email Sent</SelectItem>
                     <SelectItem value="Not_Called">Not Called</SelectItem>
                     <SelectItem value="Blacklisted">Blacklisted</SelectItem>
+                    <SelectItem value="Not_Reachable">Not Reachable</SelectItem>
+                    <SelectItem value="Wrong_Number">Wrong Number</SelectItem>
+                    <SelectItem value="Called_Postponed">
+                      Called Postponed
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
