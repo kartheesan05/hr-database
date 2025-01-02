@@ -13,7 +13,9 @@ export default function HRPitch() {
 
   useEffect(() => {
     const name = localStorage.getItem("name");
-    setName(name);
+    if (name !== "Admin") {
+      setName(name);
+    }
   }, []);
 
   return (
@@ -27,7 +29,7 @@ export default function HRPitch() {
         {/* Main Script Section */}
         <section className="mb-16">
           <div className="text-[1.2rem] font-[450] max-w-none text-gray-800 space-y-4">
-            <p>Call the HR (Office Hours: 9 AM to 4 PM)</p>
+            <p className="font-semibold">Call the HR (Office Hours: 9 AM to 4 PM)</p>
 
             <p>
               Good Morning/Good Afternoon. Am I speaking to (Mr./Ms.) (HR Name)
@@ -38,7 +40,7 @@ export default function HRPitch() {
 
             <p>
               Hello, (Sir/Ma'am). My name is {name ? name : "(YOUR NAME)"} and I
-              am calling on behalf of Mr. Muralidharan, Chief Placement Officer
+              am calling on behalf of Mr. Muraleedharan, Chief Placement Officer
               of Sri Venkateswara College of Engineering, Sriperumbudur. Could I
               please borrow 5 minutes of your time?
             </p>
@@ -47,7 +49,7 @@ export default function HRPitch() {
 
             <p>
               I am so sorry to disturb you, (Sir/Ma'am). What time is suitable
-              to call you back? (Note down the time){" "}
+              to call you back? <span className="font-semibold">(Note down the time)</span>{" "}
             </p>
 
             <p className="font-semibold">If yes</p>
