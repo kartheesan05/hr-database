@@ -36,7 +36,11 @@ export default function LoginPage() {
       result.role && localStorage.setItem("role", result.role);
       result.name && localStorage.setItem("name", result.name);
       result.incharge && localStorage.setItem("incharge", result.incharge);
-      toast.success(`Login successful, ${result.name}!`);
+      if(result.name === 'Arunima') {
+        toast.success(`Login successful cutie :3!`);
+      } else {
+        toast.success(`Login successful, ${result.name}!`);
+      }
       router.push("/");
     });
   };

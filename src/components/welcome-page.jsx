@@ -48,7 +48,7 @@ function WelcomePage() {
       )}
 
       {/* Footer */}
-      <div className="fixed bottom-8 text-center text-gray-600">
+      <div className="mt-auto py-8 text-center text-gray-600">
         <p>
           Designed & Developed by{" "}
           <a
