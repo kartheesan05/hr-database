@@ -648,6 +648,10 @@ export async function addHrBulk(hrDataArray) {
     return { errors: "Unauthorized" };
   }
 
+  if (hrDataArray.length === 0) {
+    return { errors: "No records to upload" };
+  }
+
   try {
     // 1. Generate VALUES clause for temp table insert
     const valuePlaceholders = hrDataArray

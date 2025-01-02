@@ -52,3 +52,7 @@ dist
 # Generated database
 generatedb.py
 deploy.sh
+
+# CSV files
+*.csv
+generate_csv.py

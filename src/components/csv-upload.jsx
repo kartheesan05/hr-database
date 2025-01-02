@@ -57,9 +57,17 @@ function CsvUpload() {
       },
       complete: (results) => {
         if (results.errors.length > 0) {
+          // console.error("Parse errors:", results.errors);
+          setError(
+            `CSV parsing errors check csv format: ${results.errors
+              .map((e) => e.message)
+              .join(", ")}`
+          );
           setIsLoading(false);
           return;
         }
+
+        console.log("Raw parsed data:", results.data);
 
         const records = [];
         const stats = { total: results.data.length, success: 0, failed: 0 };
@@ -142,8 +150,14 @@ function CsvUpload() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    if (parsedRecords.length === 0) {
+      setError("No records to upload");
+      setIsLoading(false);
+      return;
+    }
     const result = await addHrBulk(parsedRecords);
     setResult(result);
+    console.log(result);
     setIsLoading(false);
   };
 
@@ -187,6 +201,12 @@ function CsvUpload() {
   };
 
   const clearFile = () => {
+    // Reset the file input element
+    const fileInput = document.getElementById("file-upload");
+    if (fileInput) {
+      fileInput.value = "";
+    }
+
     setFile(null);
     setError(null);
     setResult(null);
@@ -285,6 +305,16 @@ function CsvUpload() {
               <Alert className="bg-green-100 border-green-400 text-green-700">
                 <AlertTitle>Upload Complete</AlertTitle>
                 <AlertDescription>{result.message}</AlertDescription>
+              </Alert>
+            )}
+
+            {result?.errors && result.errors.length > 0 && (
+              <Alert
+                variant="destructive"
+                className="bg-red-100 border-red-400 text-red-700"
+              >
+                <AlertTitle>Upload Errors</AlertTitle>
+                <AlertDescription>{result.errors.join(", ")}</AlertDescription>
               </Alert>
             )}
 
