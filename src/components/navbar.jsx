@@ -45,13 +45,6 @@ function Navbar() {
 
   return (
     <>
-      {/* <ProgressBar
-        height="2px"
-        color="#1e40af"
-        options={{ showSpinner: false }}
-        shallowRouting={true}
-        // style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}
-      /> */}
       <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-40">
         <div className="max-w-screen px-4 mx-auto flex justify-between items-center h-16 relative">
           <div
@@ -145,7 +138,7 @@ function Navbar() {
           <div className="hidden md:flex gap-2 absolute right-4">
             <Button
               onClick={handleLogout}
-              className="bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
+              className="bg-white hover:bg-blue-100 text-blue-800 border "
             >
               <LogOut className="mr-2 h-4 w-4" />
               Logout
@@ -245,7 +238,7 @@ function Navbar() {
             )}
             <Button
               onClick={handleLogout}
-              className="m-4 bg-white hover:bg-blue-100 text-blue-800 border border-blue-200"
+              className="m-4 bg-white hover:bg-blue-100 text-blue-800 border"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Logout

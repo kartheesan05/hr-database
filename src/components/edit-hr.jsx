@@ -200,24 +200,24 @@ function EditHrForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="hr_name">HR Name</Label>
+                  <Label htmlFor="hr_name">HR Name*</Label>
                   <Input
                     id="hr_name"
                     name="hr_name"
                     value={formData.hr_name}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone_number">Phone Number</Label>
+                  <Label htmlFor="phone_number">Phone Number*</Label>
                   <Input
                     id="phone_number"
                     name="phone_number"
                     value={formData.phone_number}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                     required
                   />
                 </div>
@@ -229,7 +229,7 @@ function EditHrForm() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                   />
                 </div>
                 <div>
@@ -240,7 +240,7 @@ function EditHrForm() {
                       handleSelectChange("interview_mode", value)
                     }
                   >
-                    <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                    <SelectTrigger className="border-neutral-200">
                       <SelectValue placeholder="Interview Mode" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,34 +254,34 @@ function EditHrForm() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="company">Company</Label>
+                  <Label htmlFor="company">Company*</Label>
                   <Input
                     id="company"
                     name="company"
                     value={formData.company}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="volunteer">Member</Label>
+                  <Label htmlFor="volunteer">Member*</Label>
                   <Input
                     id="volunteer"
                     name="volunteer"
                     value={formData.volunteer}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="incharge">Incharge</Label>
+                  <Label htmlFor="incharge">Incharge*</Label>
                   <Input
                     id="incharge"
                     name="incharge"
                     value={formData.incharge}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                   />
                 </div>
                 <div>
@@ -292,7 +292,7 @@ function EditHrForm() {
                       handleSelectChange("status", value)
                     }
                   >
-                    <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                    <SelectTrigger className="border-neutral-200">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -313,14 +313,14 @@ function EditHrForm() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="hr_count">HR Count</Label>
+                  <Label htmlFor="hr_count">HR Count*</Label>
                   <Input
                     id="hr_count"
                     name="hr_count"
                     type="number"
                     value={formData.hr_count}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                     min={1}
                   />
                 </div>
@@ -331,7 +331,7 @@ function EditHrForm() {
                     name="transport"
                     value={formData.transport}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                   />
                 </div>
                 <div>
@@ -341,7 +341,7 @@ function EditHrForm() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="border-neutral-200"
                   />
                 </div>
                 <div>
@@ -352,7 +352,7 @@ function EditHrForm() {
                       handleSelectChange("internship", value)
                     }
                   >
-                    <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                    <SelectTrigger className="border-neutral-200">
                       <SelectValue placeholder="Select internship" />
                     </SelectTrigger>
                     <SelectContent>
@@ -364,24 +364,24 @@ function EditHrForm() {
                 {formData.volunteer_email !== undefined && (
                   <>
                     <div>
-                      <Label htmlFor="volunteer_email">Member Email</Label>
+                      <Label htmlFor="volunteer_email">Member Email*</Label>
                       <Input
                         id="volunteer_email"
                         name="volunteer_email"
                         value={formData.volunteer_email}
                         onChange={handleChange}
-                        className="border-blue-200 focus:ring-blue-500"
+                        className="border-neutral-200"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="incharge_email">Incharge Email</Label>
+                      <Label htmlFor="incharge_email">Incharge Email*</Label>
                       <Select
                         value={formData.incharge_email}
                         onValueChange={(value) =>
                           handleSelectChange("incharge_email", value)
                         }
                       >
-                        <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                        <SelectTrigger className="border-neutral-200">
                           <SelectValue placeholder="Select incharge email" />
                         </SelectTrigger>
                         <SelectContent>
@@ -403,7 +403,7 @@ function EditHrForm() {
                   name="comments"
                   value={formData.comments}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500 min-h-[100px]"
+                  className="border-neutral-200 min-h-[100px]"
                 />
               </div>
               <Button

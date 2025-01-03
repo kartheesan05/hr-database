@@ -159,24 +159,24 @@ export default function AddHr() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="hr_name">HR Name</Label>
+                <Label htmlFor="hr_name">HR Name*</Label>
                 <Input
                   id="hr_name"
                   name="hr_name"
                   value={formData.hr_name}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="phone_number">Phone Number</Label>
+                <Label htmlFor="phone_number">Phone Number*</Label>
                 <Input
                   id="phone_number"
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
@@ -188,7 +188,7 @@ export default function AddHr() {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -199,7 +199,7 @@ export default function AddHr() {
                     handleSelectChange("interview_mode", value)
                   }
                 >
-                  <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                  <SelectTrigger className="focus:ring-blue-500">
                     <SelectValue placeholder="Interview Mode" />
                   </SelectTrigger>
                   <SelectContent>
@@ -211,58 +211,58 @@ export default function AddHr() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">Company*</Label>
                 <Input
                   id="company"
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="volunteer">Member</Label>
+                <Label htmlFor="volunteer">Member*</Label>
                 <Input
                   id="volunteer"
                   name="volunteer"
                   value={formData.volunteer}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
 
               {(role === "incharge" || role === "admin") && (
                 <div>
-                  <Label htmlFor="volunteer_email">Member Email</Label>
+                  <Label htmlFor="volunteer_email">Member Email*</Label>
                   <Input
                     id="volunteer_email"
                     name="volunteer_email"
                     type="email"
                     value={formData.volunteer_email}
                     onChange={handleChange}
-                    className="border-blue-200 focus:ring-blue-500"
+                    className="focus:ring-blue-500"
                     required
                   />
                 </div>
               )}
 
               <div>
-                <Label htmlFor="incharge">Incharge</Label>
+                <Label htmlFor="incharge">Incharge*</Label>
                 <Input
                   id="incharge"
                   name="incharge"
                   value={formData.incharge}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
 
               {role === "admin" && (
                 <div>
-                  <Label htmlFor="incharge_email">Incharge Email</Label>
+                  <Label htmlFor="incharge_email">Incharge Email*</Label>
                   <Select
                     value={formData.incharge_email}
                     onValueChange={(value) =>
@@ -270,7 +270,7 @@ export default function AddHr() {
                     }
                     required
                   >
-                    <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                    <SelectTrigger className="focus:ring-blue-500">
                       <SelectValue placeholder="Select incharge email" />
                     </SelectTrigger>
                     <SelectContent>
@@ -290,7 +290,7 @@ export default function AddHr() {
                   value={formData.status}
                   onValueChange={(value) => handleSelectChange("status", value)}
                 >
-                  <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                  <SelectTrigger className="focus:ring-blue-500">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -309,7 +309,7 @@ export default function AddHr() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="hr_count">HR Count</Label>
+                <Label htmlFor="hr_count">HR Count*</Label>
                 <Input
                   id="hr_count"
                   name="hr_count"
@@ -317,7 +317,7 @@ export default function AddHr() {
                   min="1"
                   value={formData.hr_count}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                   required
                 />
               </div>
@@ -328,7 +328,7 @@ export default function AddHr() {
                   name="transport"
                   value={formData.transport}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -338,7 +338,7 @@ export default function AddHr() {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="border-blue-200 focus:ring-blue-500"
+                  className="focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -349,7 +349,7 @@ export default function AddHr() {
                     handleSelectChange("internship", value)
                   }
                 >
-                  <SelectTrigger className="border-blue-200 focus:ring-blue-500">
+                  <SelectTrigger className="focus:ring-blue-500">
                     <SelectValue placeholder="Select internship" />
                   </SelectTrigger>
                   <SelectContent>
@@ -366,7 +366,7 @@ export default function AddHr() {
                 name="comments"
                 value={formData.comments}
                 onChange={handleChange}
-                className="border-blue-200 focus:ring-blue-500 min-h-[100px]"
+                className="focus:ring-blue-500 min-h-[100px]"
               />
             </div>
             <Button
