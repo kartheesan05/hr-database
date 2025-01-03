@@ -29,14 +29,16 @@ export default function HRPitch() {
         {/* Main Script Section */}
         <section className="mb-16">
           <div className="text-[1.2rem] font-[450] max-w-none text-gray-800 space-y-4">
-            <p className="font-semibold">Call the HR (Office Hours: 9 AM to 4 PM)</p>
+            <p className="font-extrabold underline">
+              Call the HR (Office Hours: 9 AM to 4 PM)
+            </p>
 
             <p>
               Good Morning/Good Afternoon. Am I speaking to (Mr./Ms.) (HR Name)
               from (COMPANY NAME)?
             </p>
 
-            <p className="font-semibold">If yes</p>
+            <p className="font-extrabold underline">If yes</p>
 
             <p>
               Hello, (Sir/Ma'am). My name is {name ? name : "(YOUR NAME)"} and I
@@ -45,14 +47,15 @@ export default function HRPitch() {
               please borrow 5 minutes of your time?
             </p>
 
-            <p className="font-semibold">If no</p>
+            <p className="font-extrabold underline">If no</p>
 
             <p>
               I am so sorry to disturb you, (Sir/Ma'am). What time is suitable
-              to call you back? <span className="font-semibold">(Note down the time)</span>{" "}
+              to call you back?{" "}
+              <span className="font-extrabold underline">(Note down the time)</span>{" "}
             </p>
 
-            <p className="font-semibold">If yes</p>
+            <p className="font-extrabold underline">If yes</p>
 
             <div className="space-y-4">
               <p>
