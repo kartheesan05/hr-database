@@ -115,14 +115,12 @@ function Navbar() {
                   Add User
                 </span>
               )}
-              {(role === "admin" || role === "incharge") && (
-                <span
-                  onClick={() => router.push("/stats")}
-                  className={getLinkStyle("/stats")}
-                >
-                  Stats
-                </span>
-              )}
+              <span
+                onClick={() => router.push("/stats")}
+                className={getLinkStyle("/stats")}
+              >
+                Stats
+              </span>
               <span
                 onClick={() => router.push("/add-hr")}
                 className={getLinkStyle("/add-hr")}

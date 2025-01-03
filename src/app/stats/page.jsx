@@ -4,6 +4,7 @@ import Navbar from "@/components/navbar";
 import InchargeStats from "@/components/incharge-stats";
 import { Button } from "@/components/ui/button";
 import AdminStats from "@/components/admin-stats";
+import MemberStats from "@/components/member-stats";
 import { useEffect, useState } from "react";
 import {
   Select,
@@ -35,10 +36,15 @@ function Page() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 mt-16">
+      <div className="container mx-auto px-2 sm:px-4 pt-4 sm:pt-8 mt-16">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">
-            {role === "admin" ? "ED" : "Incharge"} Statistics
+            {role === "admin"
+              ? "Admin"
+              : role === "volunteer"
+              ? "Member"
+              : "Incharge"}{" "}
+            Statistics
           </h1>
           {role === "admin" && (
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -87,6 +93,7 @@ function Page() {
           )
         ) : null}
         {role === "incharge" && <InchargeStats />}
+        {role === "volunteer" && <MemberStats />}
       </div>
     </>
   );

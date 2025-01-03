@@ -30,10 +30,6 @@ export default async function middleware(req) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
-  if (isStatsRoute && session?.role !== "admin" && session?.role !== "incharge") {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
-  }
-
   return NextResponse.next();
 }
 

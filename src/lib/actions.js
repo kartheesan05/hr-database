@@ -563,6 +563,41 @@ export async function deleteHR(id) {
   }
 }
 
+export async function getMemberStats() {
+  const session = await getSession();
+  if (!session?.email) {
+    return { errors: "Unauthorized" };
+  }
+
+  if (session.role !== "volunteer") {
+    return { errors: "Unauthorized" };
+  }
+
+  const query = `
+    SELECT 
+      COUNT(CASE WHEN status = 'Email_Sent' THEN 1 END) as "Email Sent",
+      COUNT(CASE WHEN status = 'Not_Called' THEN 1 END) as "Not Called",
+      COUNT(CASE WHEN status = 'Active' THEN 1 END) as "Accepted",
+      COUNT(CASE WHEN status = 'Pending' THEN 1 END) as "Pending",
+      COUNT(CASE WHEN status = 'Inactive' THEN 1 END) as "Declined",
+      COUNT(CASE WHEN status = 'Blacklisted' THEN 1 END) as "Blacklisted",
+      COUNT(CASE WHEN status = 'Not_Reachable' THEN 1 END) as "Not Reachable",
+      COUNT(CASE WHEN status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
+      COUNT(CASE WHEN status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
+      COUNT(*) as total_contacts
+    FROM hr_contacts
+    WHERE volunteer_email = $1
+  `;
+
+  try {
+    const result = await db.query(query, [session.email]);
+    return { data: result.rows[0] };
+  } catch (error) {
+    console.error("Error fetching member stats:", error);
+    return { errors: "Failed to fetch member statistics" };
+  }
+}
+
 export async function getInchargeStats(inchargeEmail) {
   const session = await getSession();
   if (!session?.email) {
