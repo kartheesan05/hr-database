@@ -50,12 +50,20 @@ export default function InchargeStats({ inchargeEmail }) {
   // Calculate status data from member data with proper number conversion
   const statusData = [
     {
-      status: "Declined",
+      status: "Called Declined",
       value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Declined"]) || 0),
+        (sum, member) => sum + (parseInt(member["Called Declined"]) || 0),
         0
       ),
       color: "#ef4444", // Red
+    },
+    {
+      status: "Emailed Declined",
+      value: memberData.reduce(
+        (sum, member) => sum + (parseInt(member["Emailed Declined"]) || 0),
+        0
+      ),
+      color: "#1f2937", // Dark Gray
     },
     {
       status: "Blacklisted",
@@ -66,17 +74,17 @@ export default function InchargeStats({ inchargeEmail }) {
       color: "#1f2937", // Dark Gray
     },
     {
-      status: "Accepted",
+      status: "Accepted Invite",
       value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Accepted"]) || 0),
+        (sum, member) => sum + (parseInt(member["Accepted Invite"]) || 0),
         0
       ),
       color: "#22c55e", // Green
     },
     {
-      status: "Pending",
+      status: "Awaiting Response",
       value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Pending"]) || 0),
+        (sum, member) => sum + (parseInt(member["Awaiting Response"]) || 0),
         0
       ),
       color: "#fbbf24", // Yellow/Amber
@@ -164,20 +172,24 @@ export default function InchargeStats({ inchargeEmail }) {
             <CardContent className="flex justify-center">
               <ChartContainer
                 config={{
-                  Declined: {
-                    label: "Declined",
+                  "Called Declined": {
+                    label: "Called Declined",
                     color: "#ef4444",
                   },
-                  Blacklisted: {
+                  "Emailed Declined": {
+                    label: "Emailed Declined",
+                    color: "#1f2937",
+                  },
+                  "Blacklisted": {
                     label: "Blacklisted",
                     color: "#1f2937",
                   },
-                  Accepted: {
-                    label: "Accepted",
+                  "Accepted Invite": {
+                    label: "Accepted Invite",
                     color: "#22c55e",
                   },
-                  Pending: {
-                    label: "Pending",
+                  "Awaiting Response": {
+                    label: "Awaiting Response",
                     color: "#fbbf24",
                   },
                   "Email Sent": {

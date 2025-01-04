@@ -32,7 +32,8 @@ export const HrContactSchema = z.object({
     "Blacklisted",
     "Not_Reachable",
     "Wrong_Number",
-    "Called_Postponed"
+    "Called_Postponed",
+    "Emailed_Declined"
   ], {
     required_error: "Status is required"
   }),

@@ -64,9 +64,14 @@ export default function MemberStats() {
   // Transform the data for the pie chart
   const chartData = [
     {
-      status: "Declined",
-      value: parseInt(statsData["Declined"] || 0),
+      status: "Emailed Declined",
+      value: parseInt(statsData["Emailed Declined"] || 0),
       color: "#ef4444", // Red
+    },
+    {
+      status: "Called Declined",
+      value: parseInt(statsData["Called Declined"] || 0),
+      color: "#1f2937", // Dark Gray
     },
     {
       status: "Blacklisted",
@@ -74,13 +79,13 @@ export default function MemberStats() {
       color: "#1f2937", // Dark Gray
     },
     {
-      status: "Accepted",
-      value: parseInt(statsData["Accepted"] || 0),
+      status: "Accepted Invite",
+      value: parseInt(statsData["Accepted Invite"] || 0),
       color: "#22c55e", // Green
     },
     {
-      status: "Pending",
-      value: parseInt(statsData["Pending"] || 0),
+      status: "Awaiting Response",
+      value: parseInt(statsData["Awaiting Response"] || 0),
       color: "#fbbf24", // Yellow/Amber
     },
     {

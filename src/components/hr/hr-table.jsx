@@ -49,7 +49,6 @@ export default function HrTable({
             Status
           </TableHead>
           <TableHead className="text-blue-800">Interview Mode</TableHead>
-          <TableHead className="text-blue-800">HR Count</TableHead>
           <TableHead className="text-blue-800">Show Details</TableHead>
         </TableRow>
       </TableHeader>
@@ -112,9 +111,9 @@ export default function HrTable({
                 }`}
               >
                 {hr.status === "Active"
-                  ? "Accepted"
+                  ? "Accepted Invite"
                   : hr.status === "Inactive"
-                  ? "Declined"
+                  ? "Called Declined"
                   : hr.status === "Email_Sent"
                   ? "Email Sent"
                   : hr.status === "Not_Called"
@@ -127,11 +126,14 @@ export default function HrTable({
                   ? "Wrong Number"
                   : hr.status === "Called_Postponed"
                   ? "Called Postponed"
-                  : "Pending"}
+                  : hr.status === "Pending"
+                  ? "Awaiting Response"
+                  : hr.status === "Emailed_Declined"
+                  ? "Emailed Declined"
+                  : null}
               </span>
             </TableCell>
             <TableCell>{hr.interview_mode}</TableCell>
-            <TableCell>{hr.hr_count}</TableCell>
             <TableCell>
               <Button
                 onClick={() => showDetails(hr)}

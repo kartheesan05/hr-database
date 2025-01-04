@@ -116,9 +116,10 @@ export default function SearchForm({
             <SelectItem value="All">All</SelectItem>
             <SelectItem value="Not_Called">Not Called</SelectItem>
             <SelectItem value="Email_Sent">Email Sent</SelectItem>
-            <SelectItem value="Active">Accepted</SelectItem>
-            <SelectItem value="Pending">Pending</SelectItem>
-            <SelectItem value="Inactive">Declined</SelectItem>
+            <SelectItem value="Active">Accepted Invite</SelectItem>
+            <SelectItem value="Pending">Awaiting Response</SelectItem>
+            <SelectItem value="Inactive">Called Declined</SelectItem>
+            <SelectItem value="Emailed_Declined">Emailed Declined</SelectItem>
             <SelectItem value="Blacklisted">Blacklisted</SelectItem>
             <SelectItem value="Not_Reachable">Not Reachable</SelectItem>
             <SelectItem value="Wrong_Number">Wrong Number</SelectItem>
