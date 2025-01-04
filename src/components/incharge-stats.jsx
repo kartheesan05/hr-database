@@ -34,6 +34,7 @@ export default function InchargeStats({ inchargeEmail }) {
         if (result.errors) {
           setError(result.errors);
         } else {
+          console.log("result.data", result.data);
           setMemberData(result.data);
           console.log(result.data);
         }
@@ -63,7 +64,7 @@ export default function InchargeStats({ inchargeEmail }) {
         (sum, member) => sum + (parseInt(member["Emailed Declined"]) || 0),
         0
       ),
-      color: "#1f2937", // Dark Gray
+      color: "#ef4444", // Red
     },
     {
       status: "Blacklisted",
@@ -178,7 +179,7 @@ export default function InchargeStats({ inchargeEmail }) {
                   },
                   "Emailed Declined": {
                     label: "Emailed Declined",
-                    color: "#1f2937",
+                    color: "#ef4444",
                   },
                   "Blacklisted": {
                     label: "Blacklisted",
@@ -409,11 +410,6 @@ export default function InchargeStats({ inchargeEmail }) {
                     ))}
                     <Label
                       content={({ viewBox }) => {
-                        const totalMemberContacts = memberData.reduce(
-                          (sum, member) =>
-                            sum + (parseInt(member.contacts) || 0),
-                          0
-                        );
                         if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                           return (
                             <text

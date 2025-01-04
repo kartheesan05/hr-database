@@ -32,6 +32,7 @@ export default function AdminStats() {
         if (result.errors) {
           setError(result.errors);
         } else {
+          console.log("result.data", result.data);
           setMemberData(result.data);
         }
       } catch (err) {
@@ -60,7 +61,7 @@ export default function AdminStats() {
         (sum, member) => sum + (parseInt(member["Emailed Declined"]) || 0),
         0
       ),
-      color: "#1f2937", // Dark Gray
+      color: "#ef4444", // Red
     },
     {
       status: "Blacklisted",
@@ -177,7 +178,7 @@ export default function AdminStats() {
                   },
                   "Emailed Declined": {
                     label: "Emailed Declined",
-                    color: "#1f2937",
+                    color: "#ef4444",
                   },
                   "Blacklisted": {
                     label: "Blacklisted",
@@ -356,13 +357,7 @@ export default function AdminStats() {
                       // Calculate the data once
                       const inchargeData = memberData.map((member, index) => ({
                         name: member.name,
-                        value:
-                          Object.entries(member)
-                            .filter(([key]) => key !== "name")
-                            .reduce(
-                              (sum, [_, value]) => sum + (parseInt(value) || 0),
-                              0
-                            ) / 2,
+                        value: member.contacts,
                         color: [
                           "#3b82f6",
                           "#22c55e",
@@ -431,14 +426,7 @@ export default function AdminStats() {
                 {/* Legend */}
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-[400px]">
                   {memberData.map((member, index) => {
-                    const totalContacts =
-                      Object.entries(member)
-                        .filter(([key]) => key !== "name")
-                        .reduce(
-                          (sum, [_, value]) => sum + (parseInt(value) || 0),
-                          0
-                        ) / 2;
-
+                    const totalContacts = member.contacts;
                     return (
                       <div key={index} className="flex items-center gap-2">
                         <div

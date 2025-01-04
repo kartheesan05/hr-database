@@ -621,7 +621,7 @@ export async function getInchargeStats(inchargeEmail) {
       COUNT(CASE WHEN h.status = 'Not_Reachable' THEN 1 END) as "Not Reachable",
       COUNT(CASE WHEN h.status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
       COUNT(CASE WHEN h.status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
-      COUNT(*) as contacts
+      COUNT(h.id) as contacts
     FROM users u
     LEFT JOIN hr_contacts h ON u.email = h.volunteer_email
     WHERE u.role = 'volunteer' 
@@ -663,7 +663,7 @@ export async function getAdminStats() {
       COUNT(CASE WHEN h.status = 'Not_Reachable' THEN 1 END) as "Not Reachable",
       COUNT(CASE WHEN h.status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
       COUNT(CASE WHEN h.status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
-      COUNT(*) as contacts
+      COUNT(h.id) as contacts
     FROM users u
     LEFT JOIN hr_contacts h ON u.email = h.incharge_email
     WHERE u.role = 'incharge'
@@ -772,70 +772,3 @@ export async function addHrBulk(hrDataArray) {
   }
 }
 
-// export async function addHrBulk(hrDataArray) {
-//   const session = await getSession();
-//   if (!session?.email) {
-//     return { errors: "Unauthorized" };
-//   }
-
-//   const duplicates = [];
-//   const successfulInserts = [];
-
-//   for (const record of hrDataArray) {
-//     try {
-//       const query = `
-//         INSERT INTO hr_contacts (
-//           hr_name, phone_number, email, interview_mode, company,
-//           volunteer, incharge, status, hr_count, transport,
-//           address, internship, comments, incharge_email, volunteer_email
-//         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-//         RETURNING *
-//       `;
-
-//       const values = [
-//         record.hr_name,
-//         record.phone_number,
-//         record.email || "",
-//         record.interview_mode || "Not Confirmed",
-//         record.company,
-//         session.name,
-//         session.incharge_name ? session.incharge_name : session.name,
-//         "Not_Called",
-//         1,
-//         record.transport || "",
-//         record.address || "",
-//         "No",
-//         record.comments || "",
-//         session.incharge_email ? session.incharge_email : session.email,
-//         session.email,
-//       ];
-
-//       const result = await db.query(query, values);
-//       if (result.rows[0]) {
-//         successfulInserts.push(record);
-//       }
-//       console.log("result", result.rows[0]);
-//     } catch (error) {
-//       if (
-//         error.code === "23505" &&
-//         error.constraint === "unique_phone_number"
-//       ) {
-//         duplicates.push({
-//           hr_name: record.hr_name,
-//           phone_number: record.phone_number,
-//         });
-//       }
-//     }
-//   }
-
-//   console.log("duplicates", duplicates);
-//   console.log("successfulInserts", successfulInserts);
-
-//   return {
-//     success: true,
-//     duplicates: duplicates.length > 0 ? duplicates : null,
-//     message: `Successfully added ${successfulInserts.length} records${
-//       duplicates.length > 0 ? `. ${duplicates.length} duplicates found.` : "."
-//     }`,
-//   };
-// }

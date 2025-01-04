@@ -71,7 +71,7 @@ export default function MemberStats() {
     {
       status: "Called Declined",
       value: parseInt(statsData["Called Declined"] || 0),
-      color: "#1f2937", // Dark Gray
+      color: "#ef4444", // Red
     },
     {
       status: "Blacklisted",

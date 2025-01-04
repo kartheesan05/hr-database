@@ -34,6 +34,10 @@ export default function HrDetailsDialog({
                   <span className="text-gray-700">{selectedHr.company}</span>
                 </span>
                 <span className="">
+                  <strong className="text-blue-600">HR Count:</strong>{" "}
+                  <span className="text-gray-700">{selectedHr.hr_count}</span>
+                </span>
+                <span className="">
                   <strong className="text-blue-600">Address:</strong>{" "}
                   <span className="text-gray-700">{selectedHr.address}</span>
                 </span>
@@ -53,7 +57,7 @@ export default function HrDetailsDialog({
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex w-full justify-between">
+        <AlertDialogFooter className="flex w-full justify-between gap-2">
           {role !== "global" && (
             <AlertDialogAction
               className="bg-green-600 hover:bg-green-700"
