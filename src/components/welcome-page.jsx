@@ -2,13 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next-nprogress-bar";
-import { useState, useEffect } from "react";
 function WelcomePage() {
-  const [role, setRole] = useState(null);
-
-  useEffect(() => {
-    setRole(localStorage.getItem("role"));
-  }, []);
 
   const router = useRouter();
 
@@ -31,21 +25,12 @@ function WelcomePage() {
       </p>
 
       {/* Sign In Button */}
-      {!role ? (
-        <Button
-          onClick={() => router.push("/login")}
-          className="bg-blue-800 hover:bg-blue-900 text-white px-12 py-6 text-xl rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
-        >
-          Login
-        </Button>
-      ) : (
-        <Button
-          onClick={() => router.push("/")}
-          className="bg-blue-800 hover:bg-blue-900 text-white px-12 py-6 text-xl rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
-        >
-          View HR Database
-        </Button>
-      )}
+      <Button
+        onClick={() => router.push("/login")}
+        className="bg-blue-800 hover:bg-blue-900 text-white px-12 py-6 text-xl rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+      >
+        Login
+      </Button>
 
       {/* Footer */}
       <div className="mt-auto py-8 text-center text-gray-600">

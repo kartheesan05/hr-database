@@ -180,7 +180,7 @@ export default function AdminStats() {
                     label: "Emailed Declined",
                     color: "#ef4444",
                   },
-                  "Blacklisted": {
+                  Blacklisted: {
                     label: "Blacklisted",
                     color: "#1f2937",
                   },
@@ -353,11 +353,10 @@ export default function AdminStats() {
                   className="h-[300px] w-full max-w-[400px]"
                 >
                   <PieChart width={300} height={300}>
-                    {(() => {
-                      // Calculate the data once
-                      const inchargeData = memberData.map((member, index) => ({
+                    <Pie
+                      data={memberData.map((member, index) => ({
                         name: member.name,
-                        value: member.contacts,
+                        value: parseInt(member.contacts) || 0,
                         color: [
                           "#3b82f6",
                           "#22c55e",
@@ -368,57 +367,66 @@ export default function AdminStats() {
                           "#f59e0b",
                           "#6366f1",
                         ][index % 8],
-                      }));
-
-                      return (
-                        <Pie
-                          data={inchargeData}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          strokeWidth={5}
-                        >
-                          {inchargeData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                          <Label
-                            content={({ viewBox }) => {
-                              if (
-                                viewBox &&
-                                "cx" in viewBox &&
-                                "cy" in viewBox
-                              ) {
-                                return (
-                                  <text
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                  >
-                                    <tspan
-                                      x={viewBox.cx}
-                                      y={viewBox.cy}
-                                      className="fill-foreground text-3xl font-bold"
-                                    >
-                                      {totalContacts}
-                                    </tspan>
-                                    <tspan
-                                      x={viewBox.cx}
-                                      y={(viewBox.cy || 0) + 24}
-                                      className="fill-muted-foreground"
-                                    >
-                                      Contacts
-                                    </tspan>
-                                  </text>
-                                );
-                              }
-                            }}
-                          />
-                        </Pie>
-                      );
-                    })()}
+                      }))}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                      {memberData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            [
+                              "#3b82f6",
+                              "#22c55e",
+                              "#f97316",
+                              "#8b5cf6",
+                              "#ec4899",
+                              "#14b8a6",
+                              "#f59e0b",
+                              "#6366f1",
+                            ][index % 8]
+                          }
+                        />
+                      ))}
+                      <Label
+                        content={({ viewBox }) => {
+                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                            const total = memberData.reduce(
+                              (sum, member) =>
+                                sum + (parseInt(member.contacts) || 0),
+                              0
+                            );
+                            return (
+                              <text
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                              >
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  className="fill-foreground text-3xl font-bold"
+                                >
+                                  {total}
+                                </tspan>
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={(viewBox.cy || 0) + 24}
+                                  className="fill-muted-foreground"
+                                >
+                                  Contacts
+                                </tspan>
+                              </text>
+                            );
+                          }
+                        }}
+                      />
+                    </Pie>
                     <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                   </PieChart>
                 </ChartContainer>
