@@ -74,7 +74,7 @@ export default function AdminStats() {
     {
       status: "Accepted Invite",
       value: memberData.reduce(
-        (sum, member) => sum + (parseInt(member["Accepted"]) || 0),
+        (sum, member) => sum + (parseInt(member["Accepted Invite"]) || 0),
         0
       ),
       color: "#22c55e", // Green
