@@ -42,7 +42,7 @@ export default function SearchForm({
           htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
-          Name
+          HR Name
         </Label>
         <Input
           id="name"

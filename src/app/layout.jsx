@@ -20,6 +20,7 @@ export default function RootLayout({ children }) {
           {children}
           <Toaster richColors theme="light" />
         </ProgressBarProvider>
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "716f5f629d1c4378bf436e405d6f28d7"}'></script>
       </body>
     </html>
   );

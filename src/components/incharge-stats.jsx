@@ -29,14 +29,10 @@ export default function InchargeStats({ inchargeEmail }) {
     async function fetchStats() {
       try {
         const result = await getInchargeStats(inchargeEmail);
-        console.log("result", result);
-        console.log("inchargeEmail", inchargeEmail);
         if (result.errors) {
           setError(result.errors);
         } else {
-          console.log("result.data", result.data);
           setMemberData(result.data);
-          console.log(result.data);
         }
       } catch (err) {
         setError("Failed to fetch statistics");

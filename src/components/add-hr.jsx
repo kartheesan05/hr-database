@@ -93,7 +93,6 @@ export default function AddHr() {
     }
 
     try {
-      console.log(validatedFields.data);
       startTransition(async () => {
         const result = await addHrRecord({
           ...validatedFields.data,

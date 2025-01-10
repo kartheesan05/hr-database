@@ -32,7 +32,6 @@ export default function AdminStats() {
         if (result.errors) {
           setError(result.errors);
         } else {
-          console.log("result.data", result.data);
           setMemberData(result.data);
         }
       } catch (err) {

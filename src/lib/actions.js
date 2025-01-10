@@ -18,7 +18,6 @@ export async function login(formData) {
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
     };
@@ -64,7 +63,6 @@ export async function login(formData) {
     role = user.role;
     user_name = user.name;
   } catch (error) {
-    console.log("error", error);
     return { errors: "servererror" };
   }
   return { role: role, name: user_name, incharge: incharge_name };
@@ -194,7 +192,6 @@ export async function addHrRecord(formData) {
     session.role === "incharge" &&
     (!formData.volunteer_email || !formData.volunteer_email.includes("@"))
   ) {
-    console.log("volunteer_email", formData.volunteer_email);
     return {
       errors: "A valid volunteer email is required",
     };
@@ -289,7 +286,6 @@ export async function addUser(state, formData) {
 
   // If role is volunteer, verify that the incharge exists
   if (role === "volunteer") {
-    console.log("inchargeEmail", inchargeEmail);
     const inchargeQuery = "SELECT * FROM users WHERE email = $1 AND role = $2";
     const inchargeResult = await db.query(inchargeQuery, [
       inchargeEmail,
@@ -297,7 +293,6 @@ export async function addUser(state, formData) {
     ]);
 
     if (inchargeResult.rows.length === 0) {
-      // console.log("inchargeResult", inchargeResult);
       return {
         errors: "Specified incharge email does not exist or is not an incharge",
       };
@@ -349,7 +344,6 @@ export async function getHR(id) {
     ]);
 
     if (hrResult.rows.length === 0) {
-      console.log("hr not found");
       return { errors: "HR record not found" };
     }
 
@@ -414,7 +408,6 @@ export async function editHR(id, formData) {
   });
 
   if (!validatedFields.success) {
-    console.log("validatedFields error", validatedFields.error);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
     };
@@ -771,4 +764,3 @@ export async function addHrBulk(hrDataArray) {
     return { success: false, errors: "Error during bulk insert." };
   }
 }
-

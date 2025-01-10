@@ -67,7 +67,6 @@ function CsvUpload() {
           return;
         }
 
-        console.log("Raw parsed data:", results.data);
 
         const records = [];
         const stats = { total: results.data.length, success: 0, failed: 0 };
@@ -77,7 +76,6 @@ function CsvUpload() {
           try {
             // Skip empty rows
             if (!Object.values(row).some((value) => value)) {
-              console.log("Skipping empty row");
               continue;
             }
 
@@ -146,7 +144,6 @@ function CsvUpload() {
   };
 
   const handleUpload = async () => {
-    console.log(parsedRecords);
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -157,7 +154,6 @@ function CsvUpload() {
     }
     const result = await addHrBulk(parsedRecords);
     setResult(result);
-    console.log(result);
     setIsLoading(false);
   };
 

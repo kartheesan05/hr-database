@@ -33,7 +33,6 @@ export default function AddUser() {
       role: formData.get("role"),
       inchargeEmail: formData.get("inchargeEmail"),
     };
-    console.log("data", data);
     await formAction(data);
   };
 
