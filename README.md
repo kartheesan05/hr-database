@@ -34,7 +34,7 @@ HRDB is designed for the purposes of uploading collected contacts individually o
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/kartheesan05/hr-database
    cd hrdb
    ```
 
