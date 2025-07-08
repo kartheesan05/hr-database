@@ -103,6 +103,11 @@ export default function LoginPage() {
                 </Button>
               </div>
             </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+              <p className="text-xs text-blue-700 text-center">
+                <strong>For testing:</strong> Email: test@test.com, Password: testpassword
+              </p>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             {errorState && (
