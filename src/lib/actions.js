@@ -80,17 +80,38 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   }
 
   const offset = (page - 1) * pageSize;
-  let query = "SELECT * FROM hr_contacts";
+  let query = `
+    SELECT
+      h.id,
+      h.hr_name,
+      h.phone_number,
+      h.email,
+      h.company,
+      h.status,
+      h.interview_mode,
+      h.hr_count,
+      h.transport,
+      h.address,
+      h.internship,
+      h.comments,
+      h.volunteer_email,
+      uv.incharge_email AS incharge_email,
+      uv.name AS volunteer,
+      ui.name AS incharge
+    FROM hr_contacts h
+    LEFT JOIN users uv ON uv.email = h.volunteer_email
+    LEFT JOIN users ui ON ui.email = uv.incharge_email
+  `;
   const queryParams = [];
 
   const whereConditions = [];
 
   // Role-based filtering
   if (session.role === "volunteer") {
-    whereConditions.push("volunteer_email = $" + (queryParams.length + 1));
+    whereConditions.push("h.volunteer_email = $" + (queryParams.length + 1));
     queryParams.push(session.email);
   } else if (session.role === "incharge") {
-    whereConditions.push("incharge_email = $" + (queryParams.length + 1));
+    whereConditions.push("uv.incharge_email = $" + (queryParams.length + 1));
     queryParams.push(session.email);
   } else if (session.role !== "admin" && session.role !== "global") {
     return { errors: "Unauthorized" };
@@ -107,15 +128,15 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
   }
   if (searchParams.search) {
     whereConditions.push(`(
-    hr_name ILIKE $${queryParams.length + 1} OR
-    phone_number ILIKE $${queryParams.length + 1} OR
-    email ILIKE $${queryParams.length + 1} OR
-    company ILIKE $${queryParams.length + 1} OR
-    volunteer ILIKE $${queryParams.length + 1} OR
-    incharge ILIKE $${queryParams.length + 1} OR
-    status ILIKE $${queryParams.length + 1} OR
-    interview_mode ILIKE $${queryParams.length + 1} OR
-    transport ILIKE $${queryParams.length + 1}
+    h.hr_name ILIKE $${queryParams.length + 1} OR
+    h.phone_number ILIKE $${queryParams.length + 1} OR
+    h.email ILIKE $${queryParams.length + 1} OR
+    h.company ILIKE $${queryParams.length + 1} OR
+    uv.name ILIKE $${queryParams.length + 1} OR
+    ui.name ILIKE $${queryParams.length + 1} OR
+    h.status ILIKE $${queryParams.length + 1} OR
+    h.interview_mode ILIKE $${queryParams.length + 1} OR
+    h.transport ILIKE $${queryParams.length + 1}
   )`);
     queryParams.push(`%${searchParams.search}%`);
   }
@@ -135,13 +156,15 @@ export async function getHrData(page = 1, pageSize = 100, searchParams = {}) {
     query += " WHERE " + whereConditions.join(" AND ");
   }
 
-  const countQuery =
-    "SELECT COUNT(*) FROM hr_contacts" +
-    (whereConditions.length > 0
-      ? " WHERE " + whereConditions.join(" AND ")
-      : "");
+  const countQuery = `
+    SELECT COUNT(*)
+    FROM hr_contacts h
+    LEFT JOIN users uv ON uv.email = h.volunteer_email
+    LEFT JOIN users ui ON ui.email = uv.incharge_email
+    ${whereConditions.length > 0 ? " WHERE " + whereConditions.join(" AND ") : ""}
+  `;
 
-  query += ` ORDER BY id LIMIT $${queryParams.length + 1} OFFSET $${
+  query += ` ORDER BY h.id LIMIT $${queryParams.length + 1} OFFSET $${
     queryParams.length + 2
   }`;
   queryParams.push(pageSize, offset);
@@ -188,6 +211,7 @@ export async function addHrRecord(formData) {
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
+  // Validate volunteer assignment per role against new schema
   if (
     session.role === "incharge" &&
     (!formData.volunteer_email || !formData.volunteer_email.includes("@"))
@@ -197,48 +221,67 @@ export async function addHrRecord(formData) {
     };
   }
 
-  if (
-    session.role === "admin" &&
-    (!formData.incharge_email ||
-      !formData.volunteer_email ||
-      !formData.incharge_email.includes("@") ||
-      !formData.volunteer_email.includes("@"))
-  ) {
+  if (session.role === "admin" && (!formData.volunteer_email || !formData.volunteer_email.includes("@"))) {
     return {
-      errors:
-        "Both incharge and volunteer emails are required and must be valid",
+      errors: "A valid volunteer email is required",
     };
   }
 
   const validatedData = validatedFields.data;
 
+  // Determine volunteer_email based on role and validate
+  let volunteerEmailToUse = session.email;
+  if (session.role === "volunteer") {
+    volunteerEmailToUse = session.email;
+  } else if (session.role === "incharge") {
+    // ensure provided volunteer belongs to this incharge
+    const checkVolunteer = await db.query(
+      "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer' AND incharge_email = $2",
+      [formData.volunteer_email, session.email]
+    );
+    if (checkVolunteer.rows.length === 0) {
+      return { errors: "Specified volunteer is not assigned to you" };
+    }
+    volunteerEmailToUse = formData.volunteer_email;
+  } else if (session.role === "admin") {
+    const checkVolunteer = await db.query(
+      "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer'",
+      [formData.volunteer_email]
+    );
+    if (checkVolunteer.rows.length === 0) {
+      return { errors: "Specified volunteer email does not exist" };
+    }
+    volunteerEmailToUse = formData.volunteer_email;
+  }
+
   const query = `
-    INSERT INTO hr_contacts (
-      hr_name, phone_number, email, interview_mode, company,
-      volunteer, incharge, status, hr_count, transport,
-      address, internship, comments, incharge_email, volunteer_email
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-    RETURNING *
+    WITH inserted AS (
+      INSERT INTO hr_contacts (
+        hr_name, volunteer_email, phone_number, email, company,
+        status, interview_mode, hr_count, transport, address,
+        internship, comments
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *
+    )
+    SELECT i.*, uv.incharge_email AS incharge_email, uv.name AS volunteer, ui.name AS incharge
+    FROM inserted i
+    JOIN users uv ON uv.email = i.volunteer_email
+    LEFT JOIN users ui ON ui.email = uv.incharge_email
   `;
 
   const values = [
     validatedData.hr_name,
+    volunteerEmailToUse,
     validatedData.phone_number,
     validatedData.email,
-    validatedData.interview_mode,
     validatedData.company,
-    validatedData.volunteer,
-    validatedData.incharge,
     validatedData.status,
+    validatedData.interview_mode,
     validatedData.hr_count,
     validatedData.transport,
     validatedData.address,
     validatedData.internship,
     validatedData.comments,
-    session.role === "volunteer"
-      ? session.incharge_email
-      : formData.incharge_email,
-    session.role === "volunteer" ? session.email : formData.volunteer_email,
   ];
 
   try {
@@ -329,7 +372,15 @@ export async function getHR(id) {
   }
 
   const query = `
-    SELECT * FROM hr_contacts WHERE id = $1
+    SELECT 
+      h.*, 
+      uv.incharge_email AS incharge_email,
+      uv.name AS volunteer,
+      ui.name AS incharge
+    FROM hr_contacts h
+    LEFT JOIN users uv ON uv.email = h.volunteer_email
+    LEFT JOIN users ui ON ui.email = uv.incharge_email
+    WHERE h.id = $1
   `;
 
   // Only fetch incharges
@@ -417,7 +468,10 @@ export async function editHR(id, formData) {
 
   // First check if the user has permission to edit this record
   const checkQuery = `
-    SELECT * FROM hr_contacts WHERE id = $1
+    SELECT h.id, h.volunteer_email, uv.incharge_email
+    FROM hr_contacts h
+    LEFT JOIN users uv ON uv.email = h.volunteer_email
+    WHERE h.id = $1
   `;
 
   try {
@@ -445,27 +499,57 @@ export async function editHR(id, formData) {
       };
     }
 
-    // Admin can edit all records, so no additional check needed for admin role
+    // Determine new volunteer assignment
+    let newVolunteerEmail = hrRecord.volunteer_email;
+    if (session.role === "volunteer") {
+      newVolunteerEmail = session.email;
+    } else if (session.role === "incharge") {
+      if (formData.volunteer_email && formData.volunteer_email !== hrRecord.volunteer_email) {
+        const checkVolunteer = await db.query(
+          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer' AND incharge_email = $2",
+          [formData.volunteer_email, session.email]
+        );
+        if (checkVolunteer.rows.length === 0) {
+          return { errors: "Specified volunteer is not assigned to you" };
+        }
+        newVolunteerEmail = formData.volunteer_email;
+      }
+    } else if (session.role === "admin") {
+      if (formData.volunteer_email && formData.volunteer_email !== hrRecord.volunteer_email) {
+        const checkVolunteer = await db.query(
+          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer'",
+          [formData.volunteer_email]
+        );
+        if (checkVolunteer.rows.length === 0) {
+          return { errors: "Specified volunteer email does not exist" };
+        }
+        newVolunteerEmail = formData.volunteer_email;
+      }
+    }
+
     const query = `
-  UPDATE hr_contacts SET
-    hr_name = $1,
-    phone_number = $2,
-    email = $3,
-    interview_mode = $4,
-    company = $5,
-    volunteer = $6,
-    incharge = $7,
-    status = $8,
-    hr_count = $9,
-    transport = $10,
-    address = $11,
-    internship = $12,
-    comments = $13,
-    volunteer_email = $14,
-    incharge_email = $15
-  WHERE id = $16
-  RETURNING *
-`;
+      WITH updated AS (
+        UPDATE hr_contacts SET
+          hr_name = $1,
+          phone_number = $2,
+          email = $3,
+          interview_mode = $4,
+          company = $5,
+          status = $6,
+          hr_count = $7,
+          transport = $8,
+          address = $9,
+          internship = $10,
+          comments = $11,
+          volunteer_email = $12
+        WHERE id = $13
+        RETURNING *
+      )
+      SELECT u.*, uv.incharge_email AS incharge_email, uv.name AS volunteer, ui.name AS incharge
+      FROM updated u
+      JOIN users uv ON uv.email = u.volunteer_email
+      LEFT JOIN users ui ON ui.email = uv.incharge_email
+    `;
 
     const values = [
       validatedData.hr_name,
@@ -473,20 +557,13 @@ export async function editHR(id, formData) {
       validatedData.email,
       validatedData.interview_mode,
       validatedData.company,
-      validatedData.volunteer,
-      validatedData.incharge,
       validatedData.status,
       validatedData.hr_count,
       validatedData.transport,
       validatedData.address,
       validatedData.internship,
       validatedData.comments,
-      session.role === "volunteer" ? session.email : formData.volunteer_email,
-      session.role === "volunteer"
-        ? session.incharge_email
-        : session.role === "incharge"
-        ? hrRecord.incharge_email
-        : formData.incharge_email,
+      newVolunteerEmail,
       id,
     ];
 
@@ -516,7 +593,10 @@ export async function deleteHR(id) {
 
   // First check if the user has permission to delete this record
   const checkQuery = `
-    SELECT * FROM hr_contacts WHERE id = $1
+    SELECT h.id, h.volunteer_email, uv.incharge_email
+    FROM hr_contacts h
+    LEFT JOIN users uv ON uv.email = h.volunteer_email
+    WHERE h.id = $1
   `;
 
   try {
@@ -645,7 +725,7 @@ export async function getAdminStats() {
 
   const query = `
     SELECT 
-      u.name,
+      ui.name,
       COUNT(CASE WHEN h.status = 'Email_Sent' THEN 1 END) as "Email Sent",
       COUNT(CASE WHEN h.status = 'Not_Called' THEN 1 END) as "Not Called",
       COUNT(CASE WHEN h.status = 'Active' THEN 1 END) as "Accepted Invite",
@@ -657,11 +737,12 @@ export async function getAdminStats() {
       COUNT(CASE WHEN h.status = 'Wrong_Number' THEN 1 END) as "Wrong Number",
       COUNT(CASE WHEN h.status = 'Called_Postponed' THEN 1 END) as "Called Postponed",
       COUNT(h.id) as contacts
-    FROM users u
-    LEFT JOIN hr_contacts h ON u.email = h.incharge_email
-    WHERE u.role = 'incharge'
-    GROUP BY u.name
-    ORDER BY u.name
+    FROM users ui
+    LEFT JOIN users uv ON uv.incharge_email = ui.email AND uv.role = 'volunteer'
+    LEFT JOIN hr_contacts h ON uv.email = h.volunteer_email
+    WHERE ui.role = 'incharge'
+    GROUP BY ui.name
+    ORDER BY ui.name
   `;
 
   try {
@@ -684,17 +765,22 @@ export async function addHrBulk(hrDataArray) {
   }
 
   try {
+    // Only volunteers can bulk upload in the new model (volunteer_email must reference a volunteer)
+    if (session.role !== "volunteer") {
+      return { errors: "Only volunteers can upload CSV in this version" };
+    }
+
     // 1. Generate VALUES clause for temp table insert
     const valuePlaceholders = hrDataArray
       .map(
         (_, index) =>
-          `($${index * 15 + 1}, $${index * 15 + 2}, $${index * 15 + 3}, $${
-            index * 15 + 4
-          }, $${index * 15 + 5}, $${index * 15 + 6}, $${index * 15 + 7}, $${
-            index * 15 + 8
-          }, $${index * 15 + 9}, $${index * 15 + 10}, $${index * 15 + 11}, $${
-            index * 15 + 12
-          }, $${index * 15 + 13}, $${index * 15 + 14}, $${index * 15 + 15})`
+          `($${index * 12 + 1}, $${index * 12 + 2}, $${index * 12 + 3}, $${
+            index * 12 + 4
+          }, $${index * 12 + 5}, $${index * 12 + 6}, $${index * 12 + 7}, $${
+            index * 12 + 8
+          }, $${index * 12 + 9}, $${index * 12 + 10}, $${index * 12 + 11}, $${
+            index * 12 + 12
+          })`
       )
       .join(", ");
     const flattenedValues = hrDataArray.flatMap((record) => [
@@ -703,37 +789,32 @@ export async function addHrBulk(hrDataArray) {
       record.email || "",
       record.interview_mode || "Not Confirmed",
       record.company,
-      session.name,
-      session.incharge_name ? session.incharge_name : session.name,
       "Not_Called",
       1,
       record.transport || "",
       record.address || "",
       "No",
       record.comments || "",
-      session.incharge_email ? session.incharge_email : session.email,
-      session.email,
+      session.email, // volunteer_email
     ]);
 
     // 2. Construct and execute the combined query
     const query = `
       WITH temp_data (
           hr_name, phone_number, email, interview_mode, company,
-          volunteer, incharge, status, hr_count, transport,
-          address, internship, comments, incharge_email, volunteer_email
+          status, hr_count, transport, address, internship, comments, volunteer_email
       ) AS (
         VALUES ${valuePlaceholders}
       ),
       inserted AS (
         INSERT INTO hr_contacts (
             hr_name, phone_number, email, interview_mode, company,
-            volunteer, incharge, status, hr_count, transport,
-            address, internship, comments, incharge_email, volunteer_email
+            status, hr_count, transport, address, internship, comments, volunteer_email
         )
         SELECT
             hr_name, phone_number, email, interview_mode, company,
-            volunteer, incharge, status, hr_count::INT, transport,
-            address, internship, comments, incharge_email, volunteer_email
+            status, hr_count::INT, transport,
+            address, internship, comments, volunteer_email
         FROM temp_data
         ON CONFLICT (phone_number) DO NOTHING
         RETURNING *
