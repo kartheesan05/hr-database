@@ -14,34 +14,30 @@ HRDB is designed for the purposes of uploading collected contacts individually o
 - **Backend:**
   - Next.js API routes
   - PostgreSQL database
-  - Drizzle ORM for database operations
   - Jose for JWT authentication
   - Zod for schema validation
 
 - **Development Tools:**
   - TypeScript
   - PostCSS
-  - Drizzle Kit for database migrations
   - Various development utilities
 
 ## 🛠️ Prerequisites
 
 - Node.js (Latest LTS version recommended)
 - PostgreSQL database
-- Yarn or npm package manager
+- npm package manager
 
 ## 📦 Installation
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/kartheesan05/hr-database
-   cd hrdb
+   cd hr-database
    ```
 
 2. Install dependencies:
    ```bash
-   yarn install
-   # or
    npm install
    ```
 
@@ -54,20 +50,11 @@ HRDB is designed for the purposes of uploading collected contacts individually o
    - JWT secret
    - Other configuration variables
 
-4. Set up the database:
-   ```bash
-   # Run database migrations
-   yarn drizzle-kit push:pg
-   # or
-   npx drizzle-kit push:pg
-   ```
 
 ## 🚀 Running the Application
 
 ### Development Mode
 ```bash
-yarn dev
-# or
 npm run dev
 ```
 The application will be available at `http://localhost:3000`
@@ -75,13 +62,9 @@ The application will be available at `http://localhost:3000`
 ### Production Mode
 ```bash
 # Build the application
-yarn build
-# or
 npm run build
 
 # Start the production server
-yarn start
-# or
 npm start
 ```
 The application will be available at `http://localhost:5004`
@@ -95,13 +78,4 @@ The application will be available at `http://localhost:5004`
 - File upload capabilities
 - Real-time updates and notifications
 - Accessible UI components
-- Database migration and management tools
-
-## 📝 Scripts
-
-- `yarn dev` - Start development server with Turbo
-- `yarn build` - Build the application for production
-- `yarn start` - Start production server
-- `yarn lint` - Run linting checks
-
 
