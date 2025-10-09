@@ -798,7 +798,9 @@ export async function addHrBulk(hrDataArray) {
       session.email, // volunteer_email
     ]);
 
-    // 2. Construct and execute the combined query
+    // 2. Construct and execute the combined query (without ON CONFLICT)
+    //    We avoid ON CONFLICT because the database may not have a unique constraint on phone_number.
+    //    Instead, insert rows that do not already exist, and then report duplicates.
     const query = `
       WITH temp_data (
           hr_name, phone_number, email, interview_mode, company,
@@ -812,18 +814,23 @@ export async function addHrBulk(hrDataArray) {
             status, hr_count, transport, address, internship, comments, volunteer_email
         )
         SELECT
-            hr_name, phone_number, email, interview_mode, company,
-            status, hr_count::INT, transport,
-            address, internship, comments, volunteer_email
-        FROM temp_data
-        ON CONFLICT (phone_number) DO NOTHING
-        RETURNING *
+            td.hr_name, td.phone_number, td.email, td.interview_mode, td.company,
+            td.status, td.hr_count::INT, td.transport,
+            td.address, td.internship, td.comments, td.volunteer_email
+        FROM temp_data td
+        WHERE NOT EXISTS (
+          SELECT 1 FROM hr_contacts h WHERE h.phone_number = td.phone_number
+        )
+        RETURNING phone_number
       )
       SELECT
         td.hr_name, td.phone_number, td.email, td.company
       FROM temp_data td
       LEFT JOIN inserted i ON td.phone_number = i.phone_number
-      WHERE i.phone_number IS NULL;
+      WHERE i.phone_number IS NULL
+        AND EXISTS (
+          SELECT 1 FROM hr_contacts h WHERE h.phone_number = td.phone_number
+        );
     `;
     const result = await db.query(query, flattenedValues);
     const duplicateRows = result.rows;

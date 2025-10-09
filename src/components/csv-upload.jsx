@@ -304,13 +304,17 @@ function CsvUpload() {
               </Alert>
             )}
 
-            {result?.errors && result.errors.length > 0 && (
+            {result?.errors && (
               <Alert
                 variant="destructive"
                 className="bg-red-100 border-red-400 text-red-700"
               >
                 <AlertTitle>Upload Errors</AlertTitle>
-                <AlertDescription>{result.errors.join(", ")}</AlertDescription>
+                <AlertDescription>
+                  {Array.isArray(result.errors)
+                    ? result.errors.join(", ")
+                    : result.errors}
+                </AlertDescription>
               </Alert>
             )}
 
