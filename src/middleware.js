@@ -10,6 +10,8 @@ const adminRoutes = ["/add-user"];
 
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
+  const url = req.nextUrl;
+  const googleFlag = url.searchParams.get("google");
   const isProtectedRoute = protectedRoutes.includes(path);
   const isLoginRoute = loginRoutes.includes(path);
   // const isOpenRoute = openRoutes.includes(path);
@@ -22,7 +24,8 @@ export default async function middleware(req) {
     return NextResponse.redirect(new URL("/welcome", req.nextUrl));
   }
 
-  if (isLoginRoute && session?.email) {
+  // Allow /login?google=1 to render so the page can stash localStorage and route away
+  if (isLoginRoute && session?.email && googleFlag !== "1") {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 

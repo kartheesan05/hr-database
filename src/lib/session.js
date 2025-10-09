@@ -46,6 +46,30 @@ export async function createSession({ email, role, incharge_email, name, incharg
   });
 }
 
+// Helper to set the session cookie on a provided Response (e.g., a redirect)
+export async function createSessionOnResponse(res, { email, role, incharge_email, name, incharge_name }) {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const sessionData = { email, role, expiresAt };
+  if (incharge_email) {
+    sessionData.incharge_email = incharge_email;
+  }
+  if (name) {
+    sessionData.name = name;
+  }
+  if (incharge_name) {
+    sessionData.incharge_name = incharge_name;
+  }
+  const session = await encrypt(sessionData);
+  res.cookies.set("session", session, {
+    // httpOnly: true,
+    // secure: true,
+    expires: expiresAt,
+    sameSite: "lax",
+    path: "/",
+  });
+  return res;
+}
+
 export async function updateSessionStatus(status) {
   const session = (await cookies()).get("session")?.value;
   const payload = await decrypt(session);
