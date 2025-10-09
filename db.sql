@@ -26,6 +26,7 @@ CREATE TABLE hr_contacts (
     comments TEXT
 );
 
+-- old schema
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -35,7 +36,6 @@ CREATE TABLE users (
     name VARCHAR(255)
 );
 
--- old schema
 CREATE TABLE hr_contacts (
     id SERIAL PRIMARY KEY,
     hr_name VARCHAR(255),
