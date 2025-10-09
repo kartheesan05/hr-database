@@ -11,7 +11,7 @@ function generateRandomString(length = 32) {
 
 export async function GET() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+  const redirectUri = process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/google/callback";
 
   if (!clientId || !redirectUri) {
     return NextResponse.redirect(new URL("/login?error=google_config", process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"));

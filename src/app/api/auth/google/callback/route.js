@@ -18,7 +18,7 @@ export async function GET(request) {
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+  const redirectUri = process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/google/callback";
 
   try {
     // Exchange authorization code for tokens
