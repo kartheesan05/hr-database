@@ -14,7 +14,7 @@ export async function GET() {
   const redirectUri = process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/google/callback";
 
   if (!clientId || !redirectUri) {
-    return NextResponse.redirect(new URL("/login?error=google_config", process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"));
+    return NextResponse.redirect(new URL("/login?error=google_config", process.env.NEXT_PUBLIC_BASE_URL));
   }
 
   const state = generateRandomString(32);
