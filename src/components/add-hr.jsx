@@ -18,14 +18,6 @@ import {
 import { addHrRecord } from "@/lib/actions";
 import { HrContactSchema } from "@/lib/definitions";
 
-const availableIncharges = [
-  "arunima@forese.co.in",
-  "jhalak@forese.co.in",
-  "karthik@forese.co.in",
-  "sandhya@forese.co.in",
-  "sanjana@forese.co.in",
-];
-
 export default function AddHr() {
   const [formData, setFormData] = useState({
     hr_name: "",
@@ -49,6 +41,7 @@ export default function AddHr() {
   const router = useRouter();
   const [errorState, setErrorState] = useState(null);
   const [isPending, startTransition] = useTransition();
+  const [availableIncharges, setAvailableIncharges] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -144,6 +137,22 @@ export default function AddHr() {
     }
 
     setRole(localStorage.getItem("role"));
+  }, []);
+
+  useEffect(() => {
+    async function loadIncharges() {
+      try {
+        const res = await fetch("/api/incharges", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (Array.isArray(json.data)) {
+          setAvailableIncharges(json.data);
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+    loadIncharges();
   }, []);
 
   return (
@@ -272,13 +281,13 @@ export default function AddHr() {
                     <SelectTrigger className="focus:ring-blue-500">
                       <SelectValue placeholder="Select incharge email" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {availableIncharges.map((email) => (
-                        <SelectItem key={email} value={email}>
-                          {email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                  <SelectContent>
+                    {availableIncharges.map((inc) => (
+                      <SelectItem key={inc.email} value={inc.email}>
+                        {inc.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                   </Select>
                 </div>
               )}
