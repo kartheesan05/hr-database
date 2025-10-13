@@ -441,6 +441,10 @@ export async function editHR(id, formData) {
     return { errors: "Unauthorized" };
   }
 
+  if (session.role !== "admin" && session.role !== "incharge" && session.role !== "volunteer") {
+    return { errors: "Unauthorized" };
+  }
+
   // Add schema validation
   const validatedFields = HrContactSchema.safeParse({
     hr_name: formData.hr_name,
@@ -501,30 +505,32 @@ export async function editHR(id, formData) {
 
     // Determine new volunteer assignment
     let newVolunteerEmail = hrRecord.volunteer_email;
+
     if (session.role === "volunteer") {
       newVolunteerEmail = session.email;
-    } else if (session.role === "incharge") {
-      if (formData.volunteer_email && formData.volunteer_email !== hrRecord.volunteer_email) {
-        const checkVolunteer = await db.query(
-          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer' AND incharge_email = $2",
-          [formData.volunteer_email, session.email]
-        );
-        if (checkVolunteer.rows.length === 0) {
-          return { errors: "Specified volunteer is not assigned to you" };
-        }
-        newVolunteerEmail = formData.volunteer_email;
+    } else if (
+      (session.role === "incharge" || session.role === "admin") &&
+      formData.volunteer_email &&
+      formData.volunteer_email !== hrRecord.volunteer_email
+    ) {
+      let query, params, errorMsg;
+      if (session.role === "incharge") {
+        query =
+          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer' AND incharge_email = $2";
+        params = [formData.volunteer_email, session.email];
+        errorMsg = "Specified volunteer is not assigned to you";
+      } else {
+        query =
+          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer'";
+        params = [formData.volunteer_email];
+        errorMsg = "Specified volunteer email does not exist";
       }
-    } else if (session.role === "admin") {
-      if (formData.volunteer_email && formData.volunteer_email !== hrRecord.volunteer_email) {
-        const checkVolunteer = await db.query(
-          "SELECT 1 FROM users WHERE email = $1 AND role = 'volunteer'",
-          [formData.volunteer_email]
-        );
-        if (checkVolunteer.rows.length === 0) {
-          return { errors: "Specified volunteer email does not exist" };
-        }
-        newVolunteerEmail = formData.volunteer_email;
+
+      const checkVolunteer = await db.query(query, params);
+      if (checkVolunteer.rows.length === 0) {
+        return { errors: errorMsg };
       }
+      newVolunteerEmail = formData.volunteer_email;
     }
 
     const query = `
@@ -591,6 +597,10 @@ export async function deleteHR(id) {
     return { errors: "Unauthorized" };
   }
 
+  if (session.role !== "admin" && session.role !== "incharge" && session.role !== "volunteer") {
+    return { errors: "Unauthorized" };
+  }
+
   // First check if the user has permission to delete this record
   const checkQuery = `
     SELECT h.id, h.volunteer_email, uv.incharge_email
@@ -640,6 +650,10 @@ export async function getMemberStats() {
   const session = await getSession();
   if (!session?.email) {
     return { errors: "Unauthorized" };
+  }
+
+  if(session.role === "admin" || session.role === "incharge") {
+    return { errors: "Cannot view member stats" };
   }
 
   if (session.role !== "volunteer") {

@@ -18,19 +18,28 @@ function Page() {
   const [role, setRole] = useState("incharge");
   const [inchargeEmail, setInchargeEmail] = useState("");
   const [showEdStats, setShowEdStats] = useState(false);
-
-  const edList = [
-    { name: "Arunima", email: "arunima@forese.co.in" },
-    { name: "Jhalak", email: "jhalak@forese.co.in" },
-    { name: "Karthik", email: "karthik@forese.co.in" },
-    { name: "Sandhya", email: "sandhya@forese.co.in" },
-    { name: "Sanjana", email: "sanjana@forese.co.in" },
-  ];
+  const [edList, setEdList] = useState([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setRole(localStorage.getItem("role") || "incharge");
     }
+  }, []);
+
+  useEffect(() => {
+    async function loadIncharges() {
+      try {
+        const res = await fetch("/api/incharges", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (Array.isArray(json.data)) {
+          setEdList(json.data);
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+    loadIncharges();
   }, []);
 
   return (
