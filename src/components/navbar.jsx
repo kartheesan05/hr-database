@@ -12,16 +12,11 @@ function Navbar() {
   const [role, setRole] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
-  const [name, setName] = useState(null);
   useEffect(() => {
     if (typeof window !== "undefined") {
       const userRole = localStorage.getItem("role");
       setRole(userRole);
       setCurrentPath(window.location.pathname);
-      const userName = localStorage.getItem("name");
-      if (userName === "Arunima") {
-        setName(userName);
-      }
     }
   }, []);
 
@@ -59,7 +54,7 @@ function Navbar() {
               />
             </div>
             <h1 className="text-blue-800 text-2xl font-bold">
-              {name ? "Mwuahhh :3" : "HR Database"}
+              {"HR Database"}
             </h1>
           </div>
 

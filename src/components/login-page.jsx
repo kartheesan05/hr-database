@@ -72,11 +72,7 @@ export default function LoginPage() {
       result.role && localStorage.setItem("role", result.role);
       result.name && localStorage.setItem("name", result.name);
       result.incharge && localStorage.setItem("incharge", result.incharge);
-      if (result.name === "Arunima") {
-        toast.success(`Login successful cutie :3!`);
-      } else {
-        toast.success(`Login successful, ${result.name}!`);
-      }
+      toast.success(`Login successful, ${result.name}!`);
       router.push("/");
     });
   };
@@ -135,12 +131,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </div>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-              <p className="text-xs text-blue-700 text-center">
-                <strong>For testing:</strong> Email: test@test.com, Password:
-                testpassword
-              </p>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
