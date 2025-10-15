@@ -60,16 +60,12 @@ export async function GET(request) {
     // Find the user in our DB by email to get role/name
     let user = await getUser(email);
     if (!user) {
-      // Create a new volunteer user with Google name and random incharge assignment
+      // Create a new admin user with Google name
       const fullName = (claims.name || `${claims.given_name || ""} ${claims.family_name || ""}`.trim()) || email.split("@")[0];
-      // pick a random incharge (if any)
-      const inchargeResult = await db.query("SELECT email FROM users WHERE role = 'incharge' ORDER BY RANDOM() LIMIT 1", []);
-      const randomInchargeEmail = inchargeResult.rows[0]?.email || null;
-      // store a random hashed password to satisfy NOT NULL constraint
       const randomPasswordHash = await bcrypt.hash(email + ":" + Date.now().toString(), 10);
       await db.query(
-        "INSERT INTO users (email, password, role, incharge_email, name) VALUES ($1, $2, $3, $4, $5)",
-        [email, randomPasswordHash, "volunteer", randomInchargeEmail, fullName]
+        "INSERT INTO users (email, password, role, name) VALUES ($1, $2, $3, $4)",
+        [email, randomPasswordHash, "admin", fullName]
       );
       user = await getUser(email);
     }
