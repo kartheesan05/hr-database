@@ -1,4 +1,6 @@
 -- new schema
+
+-- test pr review bot :p
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
